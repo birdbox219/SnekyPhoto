@@ -179,10 +179,110 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 	}
 
 
-
-
-
 }
+
+
+//Done by MahmoudELsayed
+void IvertImageFilter(Image& image)
+{
+	cout << "\nInverting image colors..." << endl;
+	for (int i = 0;i < image.width; ++i) {
+		for (int j = 0; j < image.height; ++j) {
+			for (int k = 0; k < 3; ++k) { 
+				image(i, j, k) = 255 - image(i, j, k); 
+			}
+		}
+	}
+	cout << "Color inversion complete." << endl;
+}
+
+
+
+void FlipImageFilterV(Image& image)
+{
+	unsigned char tmpImage;
+	cout << "\nFlipping image vertically..." << endl;
+	for (int i = 0; i < image.width; ++i)
+	{
+		for (int j = 0; j < image.height / 2;++j )
+		{
+			for (int k = 0; k < 3; ++k)
+			{
+				tmpImage = image(i, j, k);
+				image(i, j, k) = image(i, image.height - j - 1, k);
+				image(i, image.height - j - 1, k) = tmpImage;
+			}
+		}
+	}
+		
+
+
+
+	cout << "Vertical flip complete." << endl;
+}
+//Done by MahmoudELsayed
+void FlipImageFilterH(Image& image)
+{
+	unsigned char tmpImage;
+	cout << "\nFlipping image horizontaly..." << endl;
+	for (int i = 0; i < image.width / 2; ++i)
+	{
+		for (int j = 0; j < image.height ;++j)
+		{
+			for (int k = 0; k < 3; ++k)
+			{
+				tmpImage = image(i, j, k);
+				image(i, j, k) = image(image.width - i - 1, j , k);
+				image(image.width - i - 1, j, k) = tmpImage;
+			}
+		}
+	}
+
+
+
+
+	cout << "horizontal flip complete." << endl;
+}
+
+/*
+ImageFlipingStateMachine
+we will later implment other Fliping filters like 90-Degrees mirror diagonal, etc..
+*/
+
+
+enum FlipType
+{
+	None = 0,
+	Vertical,
+	Horizontal,
+	both,
+};
+
+//Done by MahmoudELsayed
+
+
+void FlipImageFilter(Image& image, FlipType flip)
+{
+	switch (flip)
+	{
+	case None:
+		// do nothing
+		break;
+	case Vertical:
+		FlipImageFilterV(image);
+		break;
+	case Horizontal:
+		FlipImageFilterH(image);
+		break;
+	case both:
+
+		FlipImageFilterV(image);
+		FlipImageFilterH(image);
+
+		break;
+	}
+}
+	
 
 int main()
 {
@@ -191,7 +291,11 @@ int main()
 	/*GrayScaleFilter(image);*/
 
 	//BlackAndWhiteFilter(image);
-	BlackAndWhiteOtsualgorithm(image);
+	//BlackAndWhiteOtsualgorithm(image);
+	//IvertImageFilter(image);
+	//FlipImageFilter(image);
+	//FlipImageFilterH(image);
+	FlipImageFilter(image, both);
 
 	SaveImage(image);
 
