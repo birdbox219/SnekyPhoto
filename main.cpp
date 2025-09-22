@@ -115,29 +115,30 @@ void BlackAndWhiteFilter(Image& image)
 
 void BlackAndWhiteOtsualgorithm(Image& image)
 {
-	// 1. Build histogram of brightness
-	std::vector<int> hist(256, 0);  // 256 bins for 0-255
-
+	vector <int> histogram(256, 0);
+	cout << "\nConverting image to BlackaAndWhite using Otsu algorithm..." << endl;
 	int totalPixels = image.width * image.height;
+	int index = 0; 
+	vector <unsigned char> brightnesLevels(totalPixels);
+	for (int i = 0; i < image.width; ++i)
+	{
+		for (int j = 0; j < image.height; ++j)
+		{
+			unsigned int brightnes = 0;
+			for (int k = 0; k < 3; ++k)
+			{
+				brightnes += image(i, j, k);
+			}
+			unsigned int avg = brightnes / 3;
 
-	// compute grayscale + histogram
-	std::vector<unsigned char> grayVals(totalPixels); // store brightness
-	int idx = 0;
-	for (int i = 0; i < image.width; ++i) {
-		for (int j = 0; j < image.height; ++j, ++idx) {
-			// weighted brightness for human eye perception
-			unsigned char gray =
-				static_cast<unsigned char>(0.299 * image(i, j, 0) +
-					0.587 * image(i, j, 1) +
-					0.114 * image(i, j, 2));
-			grayVals[idx] = gray;
-			hist[gray]++;
+			brightnesLevels[index] = avg;
+			histogram[avg]++;
 		}
 	}
 
-	// 2. Otsu's threshold
+	//Otsu algorithm
 	double sumAll = 0;  // total intensity mass
-	for (int t = 0; t < 256; ++t) sumAll += t * hist[t];
+	for (int t = 0; t < 256; ++t) sumAll += t * histogram[t];
 
 	double sumB = 0;  // background intensity sum
 	int wB = 0;       // background pixel count
@@ -147,16 +148,16 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 	int bestThreshold = 0;
 
 	for (int t = 0; t < 256; ++t) {
-		wB += hist[t];                // background weight
-		if (wB == 0) continue;
+		wB += histogram[t];                // background weight (count <= t)
+		if (wB == 0) continue;        // no background pixels yet -> skip
 
-		wF = totalPixels - wB;         // foreground weight
-		if (wF == 0) break;
+		wF = totalPixels - wB;        // foreground weight (count > t)
+		if (wF == 0) break;           // all pixels are background -> stop
 
-		sumB += t * hist[t];
+		sumB += t * histogram[t];          // sum of intensities for background
 
-		double mB = sumB / wB;         // mean background
-		double mF = (sumAll - sumB) / wF; // mean foreground
+		double mB = sumB / wB;               // mean intensity of background
+		double mF = (sumAll - sumB) / wF;    // mean intensity of foreground
 
 		double betweenVar = (double)wB * (double)wF * (mB - mF) * (mB - mF);
 
@@ -166,19 +167,18 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 		}
 	}
 
-	// 3. Apply threshold to image
-	idx = 0;
+	index = 0;
 	for (int i = 0; i < image.width; ++i) {
-		for (int j = 0; j < image.height; ++j, ++idx) {
-			unsigned char gray = grayVals[idx];
-
+		for (int j = 0; j < image.height; ++j, ++index) {
+			unsigned char gray = brightnesLevels[index];
 			unsigned char val = (gray >= bestThreshold) ? 255 : 0;
-
 			image(i, j, 0) = val;
 			image(i, j, 1) = val;
 			image(i, j, 2) = val;
 		}
 	}
+
+
 
 
 
