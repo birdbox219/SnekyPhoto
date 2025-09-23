@@ -282,6 +282,72 @@ void FlipImageFilter(Image& image, FlipType flip)
 		break;
 	}
 }
+
+// Done by Mahmoud Elsayed
+Image CropingImageFilter(Image& image , int x , int y , int Cwidth , int Chight)
+{
+	
+
+	cout << "\n Croping image ..." << endl;
+
+	Image Cropping(Cwidth , Chight );
+
+	if ((x + Cwidth) <= image.width && (y + Chight) <= image.height)
+	{
+		for (int i = 0; i < Cwidth; ++i)
+		{
+			for (int j = 0 ; j < Chight; ++j)
+			{
+
+				int offsetx = x + i;
+				int offsety = y + j;
+				for (int k = 0; k < 3; ++k)
+				{
+					
+					Cropping(i, j, k) = image(offsetx, offsety, k);
+					
+				}
+
+
+					
+			}
+		}
+		cout << "Cropping image complete." << endl;
+		return Cropping;
+		
+
+		
+	}
+	else
+	{
+		throw runtime_error("Image Dimesntion not compatiple");
+	}
+}
+
+
+Image ImageResizeFilter(Image& image, int newWidth, int newHight)
+{
+	cout << "\n Resizing image ..." << endl;
+	Image risizedImage(newWidth, newHight);
+
+	float Si = image.width / (float)newWidth;
+	float Sj = image.height / (float)newHight;
+
+	for (int i = 0; i < newWidth; ++i)
+	{
+		for (int j = 0 ; j < newHight; ++j)
+		{
+			int changei = (int)(i * Si);
+			int changej = (int)(j * Sj);
+			for (int k = 0; k < 3; ++k)
+			{
+				risizedImage(i, j, k) = image(changei, changej, k);
+			}
+		}
+	}
+	cout << "Reszing image complete." << endl;
+	return risizedImage;
+}
 	
 
 int main()
@@ -289,15 +355,21 @@ int main()
 	Image image = LoadImage();
 
 	/*GrayScaleFilter(image);*/
-
 	//BlackAndWhiteFilter(image);
 	//BlackAndWhiteOtsualgorithm(image);
 	//IvertImageFilter(image);
 	//FlipImageFilter(image);
 	//FlipImageFilterH(image);
-	FlipImageFilter(image, both);
+	//FlipImageFilter(image, both);
+	//CropingImageFilter(image, 500 , 500, 1000 , 1000);
+	//Image Cropped = CropingImageFilter(image, 960 , 0, 960, 1080);
+	Image Resized = ImageResizeFilter(image, 1000, 1000);
 
-	SaveImage(image);
+	//SaveImage(Resized);
+
+	//SaveImage(Cropped);
+
+	//SaveImage(image);
 
 
 	
