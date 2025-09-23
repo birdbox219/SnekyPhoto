@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Image_Class.h"
 #include <vector>
+#include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -330,8 +332,11 @@ Image ImageResizeFilter(Image& image, int newWidth, int newHight)
 	cout << "\n Resizing image ..." << endl;
 	Image risizedImage(newWidth, newHight);
 
-	float Si = image.width / (float)newWidth;
-	float Sj = image.height / (float)newHight;
+	/*float Si = (image.width - 1.0f) / (float)newWidth ;
+	float Sj = (image.height - 1.0f) / (float)newHight ;*/
+
+	float Si = (newWidth == 1) ? 0 : (image.width - 1.0f) / (newWidth - 1.0f);
+	float Sj = (newHight == 1) ? 0 : (image.height - 1.0f) / (newHight - 1.0f);
 
 	for (int i = 0; i < newWidth; ++i)
 	{
@@ -376,6 +381,98 @@ Image resizeImage(const Image& original, int targetwidth, int targetheight)
 
 
 
+
+//template <typename T>
+//T clamp_value(T v, T lo, T hi)
+//{
+//	return v < lo ? lo : (v > hi ? hi : v);
+//}
+//
+//void InfraredImageFilter(Image& image)
+//{
+//
+//	double minIR = 255.0f;
+//	double maxIR = 0.0f;
+//	
+//
+//	for (int i =  0; i < image.width; ++i)
+//	{
+//		for (int j = 0; j < image.height; ++j)
+//		{
+//
+//			unsigned char R = image(i, j, 0);
+//			unsigned char G = image(i, j, 1);
+//			unsigned char B = image(i, j, 2);
+//
+//			double IR = 0.8 * R + 0.15 * G + 0.05 * B;
+//
+//			if (IR < minIR) minIR = IR;
+//			if (IR > maxIR) maxIR = IR;
+//
+//
+//			/*float Rboost = min(255.0f, R * 1.5f);
+//			float GMIX = min(255.0f, (R + G) / 2.0f);
+//			float Blower = min(255.0f, B * 0.5f);
+//
+//			image(i, j, 0) = (unsigned  char)Rboost;
+//			image(i, j, 1) = (unsigned char)GMIX;
+//			image(i, j, 2) = (unsigned char)Blower;*/
+//
+//
+//			//float intensity = 0.3f * R + 0.59f * G + 0.11f * B;
+//
+//			//// step 2: boost
+//			//intensity = std::min(255.0f, intensity * 1.3f);
+//
+//			//// step 3: map to red-based false color
+//			//unsigned char outR = (unsigned char)intensity;
+//			//unsigned char outG = (unsigned char)(intensity * 0.2f); // just a little green
+//			//unsigned char outB = 0; // no blue
+//
+//			//image(i, j, 0) = outR;
+//			//image(i, j, 1) = outG;
+//			//image(i, j, 2) = outB;
+//
+//
+//
+//		}
+//	}
+//
+//	double range = (maxIR - minIR);
+//	if (range == 0.0) range = 1.0;
+//	for (int i = 0; i < image.width; ++i)
+//	{
+//		for (int j = 0; j < image.height; ++j)
+//		{
+//			unsigned char R = image(i, j, 0);
+//			unsigned char G = image(i, j, 1);
+//			unsigned char B = image(i, j, 2);
+//
+//			double IR = 0.8 * R + 0.15 * G + 0.05 * B;
+//
+//			double IRcompat = (IR - minIR) / range * 255.0;
+//
+//
+//			//// Replace the problematic line with the following:
+//			//unsigned char IRboost = static_cast<unsigned char>(clamp_value(IRcompat, 0.0, 255.0));
+//			//image(i, j, 0) = IRboost;
+//			//image(i, j, 1) = IRboost;
+//			//image(i, j, 2) = IRboost;
+//
+//			unsigned char outR = static_cast<unsigned char>(
+//				clamp_value(IRcompat * 1.0, 0.0, 255.0)); // main red
+//			unsigned char outG = static_cast<unsigned char>(
+//				clamp_value(IRcompat * 0.2, 0.0, 255.0)); // small green
+//			unsigned char outB = 0; // no blue
+//
+//			image(i, j, 0) = outR;
+//			image(i, j, 1) = outG;
+//			image(i, j, 2) = outB;
+//
+//
+//		}
+//	}
+//}
 
 void mergeImages()
 {
@@ -491,6 +588,62 @@ void AdjustBrightness(Image& img, bool lighten, int percent)
 		}
 	}
 }
+
+
+
+
+=======
+
+
+
+
+	
+
+
+
+
+void infrared_color(Image& img)
+{
+	for (int i = 1; i < img.width; i++) {
+		for (int j = 1; j < img.height; j++) {
+			int R = img(i, j, 0);
+			int G = img(i, j, 1);
+			int B = img(i, j, 2);
+
+			R = 255;
+			G = 255 - G;
+			B = 255 - B;
+
+
+			/*R = min(255.0f, R * 1.5f);
+			G = min(255.0f, R - G);
+			B = min(255.0f, B * 0.3f);*/
+
+			//float new_R = std::min(255.0f, R * 1.5f);
+			//float new_G = std::min(255.0f, new_R - G); // Use the modified R for this calculation.
+			//float new_B = 255.0f - B;
+
+			// Explicitly cast the float results back to an integer type
+			// before assigning them to the image pixels.
+			/*img(i, j, 0) = static_cast<int>(new_R);
+			img(i, j, 1) = static_cast<int>(new_G);
+			img(i, j, 2) = static_cast<int>(new_B);*/
+
+
+
+
+			//// Setting new RGB values
+			img(i, j, 0) = R;
+			img(i, j, 1) = G;
+			img(i, j, 2) = B;
+		}
+	}
+}
+
+	
+
+
+
 // filter edges detector made by adham.
 void DetectEdges(Image& image)
 {
@@ -533,6 +686,7 @@ void DetectEdges(Image& image)
 	image = edges;
 }
 
+
 int main()
 {
 	Image image = LoadImage();
@@ -546,9 +700,13 @@ int main()
 	//FlipImageFilter(image, both);
 	//CropingImageFilter(image, 500 , 500, 1000 , 1000);
 	//Image Cropped = CropingImageFilter(image, 960 , 0, 960, 1080);
-	Image Resized = ImageResizeFilter(image, 1000, 1000);
+	Image Resized = ImageResizeFilter(image, 2000, 2000);
+	//InfraredImageFilter(image);
+	SaveImage(Resized);
+	//IR(image);
+	//infrared_color(image);
 
-	//SaveImage(Resized);
+	//mergeImages(image);
 
 	//SaveImage(Cropped);
 
@@ -557,3 +715,4 @@ int main()
 
 	
 }
+
