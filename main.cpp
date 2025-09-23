@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Image_Class.h"
 #include <vector>
+#include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -348,6 +350,161 @@ Image ImageResizeFilter(Image& image, int newWidth, int newHight)
 	cout << "Reszing image complete." << endl;
 	return risizedImage;
 }
+
+template <typename T>
+T clamp_value(T v, T lo, T hi)
+{
+	return v < lo ? lo : (v > hi ? hi : v);
+}
+
+void InfraredImageFilter(Image& image)
+{
+
+	double minIR = 255.0f;
+	double maxIR = 0.0f;
+	
+
+	for (int i =  0; i < image.width; ++i)
+	{
+		for (int j = 0; j < image.height; ++j)
+		{
+
+			unsigned char R = image(i, j, 0);
+			unsigned char G = image(i, j, 1);
+			unsigned char B = image(i, j, 2);
+
+			double IR = 0.8 * R + 0.15 * G + 0.05 * B;
+
+			if (IR < minIR) minIR = IR;
+			if (IR > maxIR) maxIR = IR;
+
+
+			/*float Rboost = min(255.0f, R * 1.5f);
+			float GMIX = min(255.0f, (R + G) / 2.0f);
+			float Blower = min(255.0f, B * 0.5f);
+
+			image(i, j, 0) = (unsigned  char)Rboost;
+			image(i, j, 1) = (unsigned char)GMIX;
+			image(i, j, 2) = (unsigned char)Blower;*/
+
+
+			//float intensity = 0.3f * R + 0.59f * G + 0.11f * B;
+
+			//// step 2: boost
+			//intensity = std::min(255.0f, intensity * 1.3f);
+
+			//// step 3: map to red-based false color
+			//unsigned char outR = (unsigned char)intensity;
+			//unsigned char outG = (unsigned char)(intensity * 0.2f); // just a little green
+			//unsigned char outB = 0; // no blue
+
+			//image(i, j, 0) = outR;
+			//image(i, j, 1) = outG;
+			//image(i, j, 2) = outB;
+
+
+
+		}
+	}
+
+	double range = (maxIR - minIR);
+	if (range == 0.0) range = 1.0;
+
+	for (int i = 0; i < image.width; ++i)
+	{
+		for (int j = 0; j < image.height; ++j)
+		{
+			unsigned char R = image(i, j, 0);
+			unsigned char G = image(i, j, 1);
+			unsigned char B = image(i, j, 2);
+
+			double IR = 0.8 * R + 0.15 * G + 0.05 * B;
+
+			double IRcompat = (IR - minIR) / range * 255.0;
+
+
+			//// Replace the problematic line with the following:
+			//unsigned char IRboost = static_cast<unsigned char>(clamp_value(IRcompat, 0.0, 255.0));
+			//image(i, j, 0) = IRboost;
+			//image(i, j, 1) = IRboost;
+			//image(i, j, 2) = IRboost;
+
+			unsigned char outR = static_cast<unsigned char>(
+				clamp_value(IRcompat * 1.0, 0.0, 255.0)); // main red
+			unsigned char outG = static_cast<unsigned char>(
+				clamp_value(IRcompat * 0.2, 0.0, 255.0)); // small green
+			unsigned char outB = 0; // no blue
+
+			image(i, j, 0) = outR;
+			image(i, j, 1) = outG;
+			image(i, j, 2) = outB;
+
+
+		}
+	}
+}
+
+#include <algorithm> // For std::min and std::max
+
+// Assuming 'Image' class has operator() like image(x, y, channel)
+void InfraredImageFilter(Image& image)
+{
+	for (int i = 0; i < image.width; ++i)
+	{
+		for (int j = 0; j < image.height; ++j)
+		{
+			unsigned char R_orig = image(i, j, 0);
+			unsigned char G_orig = image(i, j, 1);
+			unsigned char B_orig = image(i, j, 2);
+
+			// --- Step 1: Calculate an "IR Luminance" ---
+			// A common way to simulate IR is to treat the original Red channel
+			// as if it contains IR information, or combine R and G heavily.
+			// For this specific red-dominant effect, let's use a combination
+			// that emphasizes the brighter parts, especially if they were green/red.
+			// Using max(R_orig, G_orig) tends to brighten foliage effectively.
+			float ir_luminance_float = (float)std::max(R_orig, G_orig);
+
+			// Further boost or adjust for contrast if needed.
+			// This can make the bright areas "glow" more.
+			ir_luminance_float = std::min(255.0f, ir_luminance_float * 1.5f);
+			// Clamp to 255
+			unsigned char ir_luminance = (unsigned char)ir_luminance_float;
+
+
+			// --- Step 2: Assign to new channels ---
+			// Set the Red channel to this new "IR Luminance".
+			// For the green and blue channels, we want them to be very dark,
+			// or subtly influenced by the original blue channel to add depth
+			// to the shadows.
+
+			// Red channel becomes the calculated IR brightness
+			unsigned char new_R = ir_luminance;
+
+			// Green and Blue channels are significantly reduced.
+			// You can experiment here:
+			// - Set them to 0 for pure red.
+			// - Set them to a very small fraction of the original blue/green for subtle tint.
+			// - Set them to a small fraction of the new red for a lighter red.
+
+			// For the example image, green and blue are nearly 0 in bright areas,
+			// but might retain some minimal information in dark areas.
+			unsigned char new_G = (unsigned char)(std::min(255.0f, B_orig * 0.1f)); // Keep some original blue in shadows
+			unsigned char new_B = (unsigned char)(std::min(255.0f, B_orig * 0.1f)); // Keep some original blue in shadows
+
+			// If you want it absolutely pure red where bright, you could do:
+			// unsigned char new_G = 0;
+			// unsigned char new_B = 0;
+			// But a tiny bit of original blue can give depth.
+
+			image(i, j, 0) = new_R;
+			image(i, j, 1) = new_G;
+			image(i, j, 2) = new_B;
+		}
+	}
+}
+
+
 	
 
 int main()
@@ -363,13 +520,13 @@ int main()
 	//FlipImageFilter(image, both);
 	//CropingImageFilter(image, 500 , 500, 1000 , 1000);
 	//Image Cropped = CropingImageFilter(image, 960 , 0, 960, 1080);
-	Image Resized = ImageResizeFilter(image, 1000, 1000);
-
+	//Image Resized = ImageResizeFilter(image, 1000, 1000);
+	InfraredImageFilter(image);
 	//SaveImage(Resized);
 
 	//SaveImage(Cropped);
 
-	//SaveImage(image);
+	SaveImage(image);
 
 
 	
