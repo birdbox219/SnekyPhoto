@@ -348,8 +348,149 @@ Image ImageResizeFilter(Image& image, int newWidth, int newHight)
 	cout << "Reszing image complete." << endl;
 	return risizedImage;
 }
-	
+// merged filter done by Adham.
 
+Image resizeImage(const Image& original, int targetwidth, int targetheight)
+{
+
+	Image resized(targetwidth, targetheight);
+	int originalwidth = original.width;
+	int originalheight = original.height;
+	for (int new_x = 0;new_x < targetwidth;new_x++)
+	{
+		for (int new_y = 0;new_y < targetheight;new_y++)
+		{
+			int old_x = new_x * originalwidth / targetwidth;
+			int old_y = new_y * originalheight / targetheight;
+			for (int k = 0; k < 3; k++)
+			{
+				resized(new_x, new_y, k) = original(old_x, old_y, k);
+			}
+		}
+	}
+	return resized;
+}
+
+
+
+
+
+
+
+void mergeImages()
+{
+	Image img1, img2, result;
+	string name1, name2;
+
+	cout << "enter first image filename: ";
+	cin >> name1;
+	cout << "enter second image filename: ";
+	cin >> name2;
+
+	if (!img1.loadNewImage(name1) || !img2.loadNewImage(name2))
+	{
+		cout << "failed to load images\n";
+		return;
+	}
+
+	if (img1.width != img2.width || img1.height != img2.height)
+	{
+		cout << "images not same size.\n";
+		cout << "choose option:\n";
+		cout << "1 - merge common area only\n";
+		cout << "2 - resize smaller image to match larger one\n";
+		int option;
+		cin >> option;
+
+		if (option == 1)
+		{
+			int minw = min(img1.width, img2.width);
+			int minh = min(img1.height, img2.height);
+
+			result = Image(minw, minh);
+
+			for (int i = 0; i < minw; i++)
+			{
+				for (int j = 0; j < minh; j++)
+				{
+					for (int c = 0; c < 3; c++)
+					{
+						result(i, j, c) = (img1(i, j, c) + img2(i, j, c)) / 2;
+					}
+				}
+			}
+		}
+		else if (option == 2)
+		{
+			if (img1.width > img2.width || img1.height > img2.height)
+			{
+				img2 = resizeImage(img2, img1.width, img1.height);
+				result = Image(img1.width, img1.height);
+			}
+			else
+			{
+				img1 = resizeImage(img1, img2.width, img2.height);
+				result = Image(img2.width, img2.height);
+			}
+
+			for (int i = 0; i < result.width; i++)
+			{
+				for (int j = 0; j < result.height; j++)
+				{
+					for (int c = 0; c < 3; c++)
+					{
+						result(i, j, c) = (img1(i, j, c) + img2(i, j, c)) / 2;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		result = Image(img1.width, img1.height);
+
+		for (int i = 0; i < img1.width; i++)
+		{
+			for (int j = 0; j < img1.height; j++)
+			{
+				for (int c = 0; c < 3; c++)
+				{
+					result(i, j, c) = (img1(i, j, c) + img2(i, j, c)) / 2;
+				}
+			}
+		}
+	}
+
+	result.saveImage("merged.png");
+	cout << " merged image saved as merged.png\n";
+}
+
+// brightness filter done by adham.
+void AdjustBrightness(Image& img, bool lighten, int percent)
+{
+	double factor;
+	if (lighten) {
+		factor = 1.0 + (percent / 100.0);
+	}
+	else {
+		factor = 1.0 - (percent / 100.0);
+		if (factor < 0) factor = 0;
+	}
+
+	for (int i = 0; i < img.width; i++)
+	{
+		for (int j = 0; j < img.height; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				int newval = img(i, j, k) * factor;
+				if (newval > 255) newval = 255;
+				if (newval < 0) newval = 0;
+				img(i, j, k) = newval;
+			}
+		}
+	}
+}
 int main()
 {
 	Image image = LoadImage();
