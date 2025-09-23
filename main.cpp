@@ -592,6 +592,11 @@ void AdjustBrightness(Image& img, bool lighten, int percent)
 
 
 
+=======
+
+
+
+
 	
 
 
@@ -637,6 +642,51 @@ void infrared_color(Image& img)
 
 	
 
+
+
+// filter edges detector made by adham.
+void DetectEdges(Image& image)
+{
+
+	for (int i = 0; i < image.width; i++) {
+		for (int j = 0; j < image.height; j++) {
+			unsigned int avg = 0;
+			for (int k = 0; k < 3; k++) {
+				avg += image(i, j, k);
+			}
+			avg /= 3;
+			image(i, j, 0) = avg;
+			image(i, j, 1) = avg;
+			image(i, j, 2) = avg;
+		}
+	}
+
+	Image edges(image.width, image.height);
+	int threshold = 30;
+
+	for (int i = 0; i < image.width - 1; i++)
+	{
+		for (int j = 0; j < image.height - 1; j++)
+		{
+			int diff_X = abs(image(i, j, 0) - image(i + 1, j, 0));
+			int diff_Y = abs(image(i, j, 0) - image(i, j + 1, 0));
+
+			int edgeval = diff_X + diff_Y;
+
+			if (edgeval > threshold)
+			{
+				edges(i, j, 0) = edges(i, j, 1) = edges(i, j, 2) = 0;
+			}
+			else {
+				edges(i, j, 0) = edges(i, j, 1) = edges(i, j, 2) = 255;
+			}
+		}
+	}
+
+	image = edges;
+}
+
+
 int main()
 {
 	Image image = LoadImage();
@@ -665,3 +715,4 @@ int main()
 
 	
 }
+
