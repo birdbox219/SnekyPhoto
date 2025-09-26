@@ -592,7 +592,7 @@ void AdjustBrightness(Image& img, bool lighten, int percent)
 
 
 
-=======
+// =======
 
 
 
@@ -711,6 +711,9 @@ int main()
 	//SaveImage(Cropped);
 
 	//SaveImage(image);
+
+
+	// Test GIT
 
 
 	
