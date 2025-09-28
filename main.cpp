@@ -687,22 +687,115 @@ void DetectEdges(Image& image)
 }
 
 
+
+
+
+
+
+
+
+// Filter No.6 Image Rotation (done by: Youssif Elnahs)
+
+
+void Rotation(Image& image) {
+
+	cout << "You Are Now on Image Rotaion Filter... :)\n";
+	short degree = 0;
+	cout << "Please Enter Rotation Degree: 90 - 180 - 270? ";
+	cin >> degree;
+
+
+	if (degree == 90) {
+		Image rotated(image.height, image.width);
+		for (int i = 0; i < image.width; i++) {
+			for (int j = 0; j < image.height; j++) {
+				for (int k = 0; k < 3; k++) {
+					rotated(image.height - 1 - j, i, k) = image(i, j, k);
+				}
+			}
+		}
+		image = rotated;
+	}
+
+	else if (degree == 180) {
+		Image rotated(image.width, image.height);
+		for (int i = 0; i < image.width; i++) {
+			for (int j = 0; j < image.height; j++) {
+				for (int k = 0; k < 3; k++) {
+					rotated(image.width - 1 - i, image.height - 1 - j, k) = image(i, j, k);
+				}
+			}
+		}
+		image = rotated;
+	}
+
+	else if (degree == 270) {
+		Image rotated(image.height, image.width);
+		for (int i = 0; i < image.width; i++) {
+			for (int j = 0; j < image.height; j++) {
+				for (int k = 0; k < 3; k++) {
+					rotated(j, image.width - 1 - i, k) = image(i, j, k);
+				}
+			}
+		}
+		image = rotated;
+	}
+}
+
+
+
+
+// Filter N0.12 - Blur Filter (done by Youssif Elnahas)
+
+void Blur(Image& image) {
+	cout << "You are now on Image Blur Filter... :)\n";
+
+	int kernelSize = 20;
+	int offset = kernelSize / 2;
+
+	Image blurred(image.width, image.height);
+	for (int x = 0; x < image.width; x++) {
+		for (int y = 0; y < image.height; y++) {
+			for (int c = 0; c < 3; c++) {
+				int sum = 0;
+				int count = 0;
+
+				for (int i = -offset; i <= offset; i++) {
+					for (int j = -offset; j <= offset; j++) {
+						int nx = x + i;
+						int ny = y + j;
+
+						if (nx >= 0 && nx < image.width && ny >= 0 && ny < image.height) {
+							sum += image(nx, ny, c);
+							count++;
+						}
+					}
+				}
+				blurred(x, y, c) = sum / count;
+			}
+		}
+	}
+	image = blurred;
+}
+
+
 int main()
 {
 	Image image = LoadImage();
-
 	/*GrayScaleFilter(image);*/
 	//BlackAndWhiteFilter(image);
 	//BlackAndWhiteOtsualgorithm(image);
 	//IvertImageFilter(image);
 	//FlipImageFilter(image);
+	//Rotation(image);
 	//FlipImageFilterH(image);
 	//FlipImageFilter(image, both);
 	//CropingImageFilter(image, 500 , 500, 1000 , 1000);
 	//Image Cropped = CropingImageFilter(image, 960 , 0, 960, 1080);
-	Image Resized = ImageResizeFilter(image, 2000, 2000);
+	//Image Resized = ImageResizeFilter(image, 2000, 2000);
+	//Blur(image);
 	//InfraredImageFilter(image);
-	SaveImage(Resized);
+	//SaveImage(Resized);
 	//IR(image);
 	//infrared_color(image);
 
@@ -710,10 +803,8 @@ int main()
 
 	//SaveImage(Cropped);
 
-	//SaveImage(image);
+	SaveImage(image);
 
-
-	// Test GIT
 
 
 	
