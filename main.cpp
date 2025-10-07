@@ -1,10 +1,40 @@
-#include <iostream>
+﻿#include <iostream>
 #include "Image_Class.h"
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <stack>
+#include <limits>
+#include <cstdlib>
+
 
 using namespace std;
+
+// --------------------------//
+
+
+/*
+⠄⠄⠄⠄⢠⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿⣿⣿⣿⣿⣯⢻⣿⣿⣿⣿⣆⠄⠄⠄
+⠄⠄⣼⢀⣿⣿⣿⣿⣏⡏⠄⠹⣿⣿⣿⣿⣿⣿⣿⣿⣧⢻⣿⣿⣿⣿⡆⠄⠄
+⠄⠄⡟⣼⣿⣿⣿⣿⣿⠄⠄⠄⠈⠻⣿⣿⣿⣿⣿⣿⣿⣇⢻⣿⣿⣿⣿⠄⠄
+⠄⢰⠃⣿⣿⠿⣿⣿⣿⠄⠄⠄⠄⠄⠄⠙⠿⣿⣿⣿⣿⣿⠄⢿⣿⣿⣿⡄⠄
+⠄⢸⢠⣿⣿⣧⡙⣿⣿⡆⠄⠄⠄⠄⠄⠄⠄⠈⠛⢿⣿⣿⡇⠸⣿⡿⣸⡇⠄
+⠄⠈⡆⣿⣿⣿⣿⣦⡙⠳⠄⠄⠄⠄⠄⠄⢀⣠⣤⣀⣈⠙⠃⠄⠿⢇⣿⡇⠄
+⠄⠄⡇⢿⣿⣿⣿⣿⡇⠄⠄⠄⠄⠄⣠⣶⣿⣿⣿⣿⣿⣿⣷⣆⡀⣼⣿⡇⠄
+⠄⠄⢹⡘⣿⣿⣿⢿⣷⡀⠄⢀⣴⣾⣟⠉⠉⠉⠉⣽⣿⣿⣿⣿⠇⢹⣿⠃⠄
+⠄⠄⠄⢷⡘⢿⣿⣎⢻⣷⠰⣿⣿⣿⣿⣦⣀⣀⣴⣿⣿⣿⠟⢫⡾⢸⡟⠄.
+⠄⠄⠄⠄⠻⣦⡙⠿⣧⠙⢷⠙⠻⠿⢿⡿⠿⠿⠛⠋⠉⠄⠂⠘⠁⠞⠄⠄⠄
+⠄⠄⠄⠄⠄⠈⠙⠑⣠⣤⣴⡖⠄⠿⣋⣉⣉⡁⠄⢾⣦⠄⠄⠄⠄⠄⠄⠄⠄
+*/
+
+
+
+
+
+
+
+// This function prints the message and waits for the user
+
 
 Image LoadImage()
 {
@@ -43,25 +73,133 @@ void SaveImage(Image& image)
 	}
 }
 
+void HeaderLine() {
+	cout << "=========================================\n";
+}
 
+
+void SeparatorLine() {
+	cout << "-----------------------------------------\n";
+}
+
+
+
+int LoadMenu()
+{
+
+
+
+
+	
+
+	
+		HeaderLine();
+		cout << "    IMAGE PROCESSING APPLICATION V6.0\n";
+		HeaderLine();
+		cout << "\n\n";
+
+		HeaderLine();
+		cout << "  FILTERS:\n";
+		HeaderLine();
+		cout << "  1. Grayscale\n";
+		cout << "  2. Black and White\n";
+		cout << "  3. Invert Colors\n";
+		cout << "  4. Flip Image\n";
+		cout << "  5. Crop Image\n";
+		cout << "  6. Resize Image\n";
+		cout << "  7. Infrared Color Effect\n";
+
+		HeaderLine();
+		cout << "  MANAGEMENT:\n";
+		HeaderLine();
+		cout << "  97. Show Applied Filters\n";
+		cout << "  98. Save Image\n";
+		cout << "  99. Undo Last Filter\n";
+		cout << "  100. Redo Last Undone Filter\n";
+		cout << "  101. Save and exit\n";
+
+		cout << "\n  0. Exit\n";
+
+		SeparatorLine();
+		cout << ">> Enter your choice: ";
+
+		int choice;
+		
+		while (!(std::cin >> choice)) {
+			std::cout << "Invalid input. Please enter a number: ";
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		}
+		return choice;
+	
+}
+
+
+int LoadStartMenu()
+{
+	HeaderLine();
+	cout << "    START MENU\n";
+	HeaderLine();
+
+	cout << "  1. Load Image\n";
+	cout << "  2. Exit\n";
+
+
+	cout << "-----------------------------------------\n";
+	cout << "\n\n";
+	int choice;
+
+	while (!(std::cin >> choice)) {
+		std::cout << "Invalid input. Please enter a number: ";
+		std::cin.clear();
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	}
+	return choice;
+}
+
+void pause()
+{
+	cout << "Press Enter to continue...";
+	cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+	cin.get(); 
+}
+
+void NewFilter(stack<Image>& redoFilter , stack<string>& redoHistory)
+{
+	while (!redoFilter.empty()) redoFilter.pop();
+	while (!redoHistory.empty()) redoHistory.pop();
+}
+
+void ClaearScreen()
+{
+#ifdef _WIN32
+	system("cls");
+#else
+	system("clear");
+#endif
+}
+	
+
+
+// --------------------------//
 void GrayScaleFilter(Image& image)
 {
 	
 	cout << "\nConverting image to grayscale..." << endl;
 	for (int i = 0; i < image.width; ++i) {
 		for (int j = 0; j < image.height; ++j) {
-			// Use a larger type like unsigned int to prevent overflow when summing up channel values
+			
 			unsigned int avg = 0;
 
-			// Accumulate pixel values for all channels (R, G, B)
+			
 			for (int k = 0; k < 3; ++k) {
 				avg += image(i, j, k);
 			}
 
-			// Calculate the average value and cast it back to a byte
+			
 			unsigned char gray_value = avg / 3;
 
-			// Set all channels to the average value to create a gray pixel
+			
 			image(i, j, 0) = gray_value;
 			image(i, j, 1) = gray_value;
 			image(i, j, 2) = gray_value;
@@ -139,24 +277,24 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 	}
 
 	//Otsu algorithm
-	double sumAll = 0;  // total intensity mass
+	double sumAll = 0;  
 	for (int t = 0; t < 256; ++t) sumAll += t * histogram[t];
 
-	double sumB = 0;  // background intensity sum
-	int wB = 0;       // background pixel count
-	int wF = 0;       // foreground pixel count
+	double sumB = 0;  
+	int wB = 0;      
+	int wF = 0;       
 
 	double maxVar = 0;
-	int bestThreshold = 0;
+	int Threshold = 0;
 
 	for (int t = 0; t < 256; ++t) {
-		wB += histogram[t];                // background weight (count <= t)
-		if (wB == 0) continue;        // no background pixels yet -> skip
+		wB += histogram[t];                
+		if (wB == 0) continue;        
 
-		wF = totalPixels - wB;        // foreground weight (count > t)
-		if (wF == 0) break;           // all pixels are background -> stop
+		wF = totalPixels - wB;        
+		if (wF == 0) break;           
 
-		sumB += t * histogram[t];          // sum of intensities for background
+		sumB += t * histogram[t];          
 
 		double mB = sumB / wB;               
 		double mF = (sumAll - sumB) / wF;    
@@ -165,7 +303,7 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 
 		if (betweenVar > maxVar) {
 			maxVar = betweenVar;
-			bestThreshold = t;
+			Threshold = t;
 		}
 	}
 
@@ -173,7 +311,7 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 	for (int i = 0; i < image.width; ++i) {
 		for (int j = 0; j < image.height; ++j, ++index) {
 			unsigned char gray = brightnesLevels[index];
-			unsigned char val = (gray >= bestThreshold) ? 255 : 0;
+			unsigned char val = (gray >= Threshold) ? 255 : 0;
 			image(i, j, 0) = val;
 			image(i, j, 1) = val;
 			image(i, j, 2) = val;
@@ -285,8 +423,18 @@ void FlipImageFilter(Image& image, FlipType flip)
 	}
 }
 
+const char* flipTypeToString(FlipType type) {
+	switch (type) {
+	case Vertical: return "Vertical";
+	case Horizontal: return "Horizontal";
+	case both: return "Both";
+	case None: return "None";
+	}
+	return "Unknown";
+}
+
 // Done by Mahmoud Elsayed
-Image CropingImageFilter(Image& image , int x , int y , int Cwidth , int Chight)
+void CropingImageFilter(Image& image , int x , int y , int Cwidth , int Chight)
 {
 	
 
@@ -315,7 +463,7 @@ Image CropingImageFilter(Image& image , int x , int y , int Cwidth , int Chight)
 			}
 		}
 		cout << "Cropping image complete." << endl;
-		return Cropping;
+		image =  Cropping;
 		
 
 		
@@ -327,7 +475,7 @@ Image CropingImageFilter(Image& image , int x , int y , int Cwidth , int Chight)
 }
 
 
-Image ImageResizeFilter(Image& image, int newWidth, int newHight)
+void ImageResizeFilter(Image& image, int newWidth, int newHight)
 {
 	cout << "\n Resizing image ..." << endl;
 	Image risizedImage(newWidth, newHight);
@@ -351,7 +499,7 @@ Image ImageResizeFilter(Image& image, int newWidth, int newHight)
 		}
 	}
 	cout << "Reszing image complete." << endl;
-	return risizedImage;
+	image = risizedImage;
 }
 // merged filter done by Adham.
 
@@ -382,97 +530,7 @@ Image resizeImage(const Image& original, int targetwidth, int targetheight)
 
 
 
-//template <typename T>
-//T clamp_value(T v, T lo, T hi)
-//{
-//	return v < lo ? lo : (v > hi ? hi : v);
-//}
-//
-//void InfraredImageFilter(Image& image)
-//{
-//
-//	double minIR = 255.0f;
-//	double maxIR = 0.0f;
-//	
-//
-//	for (int i =  0; i < image.width; ++i)
-//	{
-//		for (int j = 0; j < image.height; ++j)
-//		{
-//
-//			unsigned char R = image(i, j, 0);
-//			unsigned char G = image(i, j, 1);
-//			unsigned char B = image(i, j, 2);
-//
-//			double IR = 0.8 * R + 0.15 * G + 0.05 * B;
-//
-//			if (IR < minIR) minIR = IR;
-//			if (IR > maxIR) maxIR = IR;
-//
-//
-//			/*float Rboost = min(255.0f, R * 1.5f);
-//			float GMIX = min(255.0f, (R + G) / 2.0f);
-//			float Blower = min(255.0f, B * 0.5f);
-//
-//			image(i, j, 0) = (unsigned  char)Rboost;
-//			image(i, j, 1) = (unsigned char)GMIX;
-//			image(i, j, 2) = (unsigned char)Blower;*/
-//
-//
-//			//float intensity = 0.3f * R + 0.59f * G + 0.11f * B;
-//
-//			//// step 2: boost
-//			//intensity = std::min(255.0f, intensity * 1.3f);
-//
-//			//// step 3: map to red-based false color
-//			//unsigned char outR = (unsigned char)intensity;
-//			//unsigned char outG = (unsigned char)(intensity * 0.2f); // just a little green
-//			//unsigned char outB = 0; // no blue
-//
-//			//image(i, j, 0) = outR;
-//			//image(i, j, 1) = outG;
-//			//image(i, j, 2) = outB;
-//
-//
-//
-//		}
-//	}
-//
-//	double range = (maxIR - minIR);
-//	if (range == 0.0) range = 1.0;
-//	for (int i = 0; i < image.width; ++i)
-//	{
-//		for (int j = 0; j < image.height; ++j)
-//		{
-//			unsigned char R = image(i, j, 0);
-//			unsigned char G = image(i, j, 1);
-//			unsigned char B = image(i, j, 2);
-//
-//			double IR = 0.8 * R + 0.15 * G + 0.05 * B;
-//
-//			double IRcompat = (IR - minIR) / range * 255.0;
-//
-//
-//			//// Replace the problematic line with the following:
-//			//unsigned char IRboost = static_cast<unsigned char>(clamp_value(IRcompat, 0.0, 255.0));
-//			//image(i, j, 0) = IRboost;
-//			//image(i, j, 1) = IRboost;
-//			//image(i, j, 2) = IRboost;
-//
-//			unsigned char outR = static_cast<unsigned char>(
-//				clamp_value(IRcompat * 1.0, 0.0, 255.0)); // main red
-//			unsigned char outG = static_cast<unsigned char>(
-//				clamp_value(IRcompat * 0.2, 0.0, 255.0)); // small green
-//			unsigned char outB = 0; // no blue
-//
-//			image(i, j, 0) = outR;
-//			image(i, j, 1) = outG;
-//			image(i, j, 2) = outB;
-//
-//
-//		}
-//	}
-//}
+
 
 void mergeImages()
 {
@@ -592,7 +650,6 @@ void AdjustBrightness(Image& img, bool lighten, int percent)
 
 
 
-=======
 
 
 
@@ -612,64 +669,133 @@ void infrared_color(Image& img)
 
 			R = 255;
 			G = 255 - G;
-			B = 255 - B;
+			//B = 255 - B;
 
 
-			/*R = min(255.0f, R * 1.5f);
-			G = min(255.0f, R - G);
-			B = min(255.0f, B * 0.3f);*/
-
-			//float new_R = std::min(255.0f, R * 1.5f);
-			//float new_G = std::min(255.0f, new_R - G); // Use the modified R for this calculation.
-			//float new_B = 255.0f - B;
-
-			// Explicitly cast the float results back to an integer type
-			// before assigning them to the image pixels.
-			/*img(i, j, 0) = static_cast<int>(new_R);
-			img(i, j, 1) = static_cast<int>(new_G);
-			img(i, j, 2) = static_cast<int>(new_B);*/
-
-
-
-
-			//// Setting new RGB values
+			
 			img(i, j, 0) = R;
 			img(i, j, 1) = G;
 			img(i, j, 2) = B;
 		}
 	}
+}
 
 
-//enum Rotate
-//{
-//	 rotate90 ,
-//	 rotate180,
-//	 rotate270,
-//
-//
-//};
+
+void SunLightImageFilter(Image& image , int sunBrightness)
+{
+	
 
 
-//void RotateImageFilter90(Image& image)
-//{
-//	Image Rotated(image.height, image.width);
-//
-//	for (int i = 0; i < image.width; i++) {
-//
-//		for (int j = 0; j < image.height; j++)
-//		{
-//			for (int k = 0; k < image.channels; ++k)
-//			{
-//				Rotated(j, image.width - 1 - i, k) = image(i, j, k);
-//			}
-//		}
-//
-//	}
-//
-//	image = Rotated;
-//		cout << "done";
-//
-//}
+
+	for(int i = 0; i < image.width; ++i) {
+		for (int j = 0; j < image.height; ++j) {
+			int R = image(i, j, 0)+sunBrightness;
+			int G = image(i, j, 1) + sunBrightness/2;
+			float B =  image(i, j, 2) * 0.8f;
+			
+			
+
+			image(i, j, 0) = min(255, R);
+			image(i, j, 1) = min(255, G);
+			image(i, j, 2) = max(0.0f , B);
+
+
+			
+			
+		}
+	}
+
+}
+
+
+
+
+template <typename T>
+T clamp(T value, T minValue, T maxValue) {
+	if (value < minValue) return minValue;
+	if (value > maxValue) return maxValue;
+	return value;
+}
+
+
+void OldTVImageFilter(Image& image)
+{ 
+
+	GrayScaleFilter(image);
+	int noiseDistortion = 30;
+	double blackLInesHighlight = 0.3;
+	int lineThickness = 5;
+	int lineSpacing = 10;
+
+
+	double vigS = 0.4;
+	double vigP = 2.5;
+	double centerX = image.width / 2.0;
+	double centerY = image.height / 2.0;
+
+	for(int i = 0; i < image.width; ++i) {
+		
+		for (int j = 0; j < image.height; ++j) {
+
+			double dx = (i - centerX) / centerX;
+			double dy = (j - centerY) / centerY;
+
+			double distance = sqrt(dx * dx + dy * dy);
+			double vignette = 1.0 - vigS * pow(distance, vigP);
+
+			if (vignette < 0.0)
+			{
+				vignette = 0.0;
+			}
+			
+
+			
+
+			for (int k = 0; k < 3; ++k) {
+				
+				int newDisotrtion = image(i, j, k);
+
+				int jitterAmount = (rand() % noiseDistortion) + (rand() % noiseDistortion) + (rand() % noiseDistortion) - (3 * noiseDistortion / 2);
+				newDisotrtion += jitterAmount;
+				
+				if ((j % lineSpacing) < lineThickness)
+				{
+					
+					newDisotrtion = static_cast<int>(newDisotrtion * (1.0 - blackLInesHighlight));
+				}
+
+
+				newDisotrtion = static_cast<int>(newDisotrtion * vignette);
+
+				image(i, j, k) = clamp(newDisotrtion, 0, 255); 
+			}
+			
+		}
+	}
+}
+
+
+void PurpleImageFilter(Image& image)
+{
+
+	int purblePower = 50;
+	double R, G, B;
+	for (int i = 0; i < image.width; ++i) {
+		for (int j = 0; j < image.height; ++j) {
+			
+			R = image(i, j, 0) + purblePower;
+			G = image(i, j, 1) - purblePower / 2;
+			B = image(i, j, 2) + purblePower;
+
+			image(i, j, 0) = clamp(static_cast<int>(R), 0, 255);
+			image(i, j, 1) = clamp(static_cast<int>(G), 0, 255);
+			image(i, j, 2) = clamp(static_cast<int>(B), 0, 255);
+
+
+		}
+	}
+}
 
 
 
@@ -704,7 +830,7 @@ void DetectEdges(Image& image)
 	}
 
 	Image edges(image.width, image.height);
-	int threshold = 30;
+	int threshold = 20;
 
 	for (int i = 0; i < image.width - 1; i++)
 	{
@@ -729,11 +855,395 @@ void DetectEdges(Image& image)
 }
 
 
+
+
 int main()
 {
-	Image image = LoadImage();
+	Image image;
 
-	/*GrayScaleFilter(image);*/
+
+	cout << R"(
+
+   _____            __         ____  __          __      
+  / ___/____  ___  / /____  __/ __ \/ /_  ____  / /_____ 
+  \__ \/ __ \/ _ \/ //_/ / / / /_/ / __ \/ __ \/ __/ __ \				
+ ___/ / / / /  __/ ,< / /_/ / ____/ / / / /_/ / /_/ /_/ /
+/____/_/ /_/\___/_/|_|\__, /_/   /_/ /_/\____/\__/\____/				
+                     /____/                                 
+                                             
+                                                                                                              
+)" << "\n";
+
+	cout << "                 (c) 2025 Mahmoud elsayed Games. All Rights Reserved.\n\n";
+
+	
+	int startChoice = LoadStartMenu();
+
+	switch(startChoice)
+	{
+		case 1:
+			image = LoadImage();
+			break;
+
+		case 2:
+			cout << "Exiting the program. \n";
+			return 0;
+		default:
+		cout << "Invalid choice. Exiting the program.\n";
+		return 0;
+		break;
+	}
+
+	//Image image = LoadImage();
+
+	stack<Image> apliedFilter;
+	vector<string> filterHistory;
+
+	stack<Image> redoFilter;
+	stack<string> redoHistory ;
+
+
+
+	bool running = true;
+
+	while (running)
+	{
+		ClaearScreen();
+
+		
+
+
+		try
+		{
+			
+			int choice = LoadMenu();
+
+			switch (choice)
+			{
+			case 1:
+			{
+				/*while (!redoFilter.empty()) redoFilter.pop();
+				while (!redoHistory.empty()) redoHistory.pop();*/
+
+				NewFilter(redoFilter, redoHistory);
+
+				apliedFilter.push(image);
+				GrayScaleFilter(image);
+				filterHistory.push_back("GrayScale");
+
+				
+				pause();
+				break;
+			}
+			case 2:
+			{
+				/*while (!redoFilter.empty()) redoFilter.pop();
+				while (!redoHistory.empty()) redoHistory.pop();*/
+
+				NewFilter(redoFilter, redoHistory);
+
+				apliedFilter.push(image);
+				BlackAndWhiteFilter(image);
+				filterHistory.push_back("BlackAndWhite");
+
+				pause();
+				break;
+			}
+			case 3:
+			{
+				/*while (!redoFilter.empty()) redoFilter.pop();
+				while (!redoHistory.empty()) redoHistory.pop();*/
+
+				NewFilter(redoFilter, redoHistory);
+
+				apliedFilter.push(image);
+				IvertImageFilter(image);
+				filterHistory.push_back("InvertColors");
+
+				
+				pause();
+
+				break;
+			}
+			case 4:
+			{
+				/*while (!redoFilter.empty()) redoFilter.pop();
+				while (!redoHistory.empty()) redoHistory.pop();*/
+
+				NewFilter(redoFilter, redoHistory);
+
+				apliedFilter.push(image);
+
+				HeaderLine();
+				cout << "Choose flip type:\n";
+				cout << "1. Vertical\n";
+				cout << "2. Horizontal\n";
+				cout << "3. Both\n";
+				cout << "0. None (cancel)\n";
+				HeaderLine();
+
+				int flipChoice;
+				cin >> flipChoice;
+
+				FlipType flipType = None;
+				switch (flipChoice)
+				{
+				case 1:
+					flipType = Vertical;
+					break;
+				case 2:
+					flipType = Horizontal;
+					break;
+				case 3:
+					flipType = both;
+					break;
+				case 0:
+					flipType = None;
+					break;
+				default:
+					cout << "Invalid choice. No flip applied.\n";
+					flipType = None;
+					break;
+
+				}
+				if (flipType != None)
+				{
+					FlipImageFilter(image, flipType);
+					cout << "Applied " << flipTypeToString(flipType) << " flip.\n";
+					filterHistory.push_back(string(flipTypeToString(flipType)) + "Flip");
+
+				}
+				else
+				{
+					if(!apliedFilter.empty())
+					{
+						cout << "No flip applied.\n";
+						apliedFilter.pop();
+						break;
+					}
+					
+				}
+
+
+					
+				
+				pause();
+				break;
+			}
+			case 5:
+			{
+				
+
+				NewFilter(redoFilter, redoHistory);
+
+				apliedFilter.push(image);
+				int x, y, Cwidth, Chight;
+				cout << "Enter x, y, width, height for cropping: ";
+				cin >> x >> y >> Cwidth >> Chight;
+				if (x < 0 || y < 0 || Cwidth <= 0 || Chight <= 0) {
+					cout << "Invalid crop parameters.\n";
+					apliedFilter.pop();
+					break;
+				}
+				
+				CropingImageFilter(image, x, y, Cwidth, Chight);
+				filterHistory.push_back("Croping");
+
+				
+				pause();
+				break;
+				
+				
+			}
+			case 6:
+			{
+				/*while (!redoFilter.empty()) redoFilter.pop();
+				while (!redoHistory.empty()) redoHistory.pop();*/
+
+				NewFilter(redoFilter, redoHistory);
+				
+				apliedFilter.push(image);
+				int newWidth, newHight;
+				cout << "Enter new width and height for resizing: ";
+				cin >> newWidth >> newHight;
+				if (newWidth <= 0 || newHight <= 0) {
+					cout << "Invalid dimensions.\n";
+					apliedFilter.pop();
+					break;
+				}
+				ImageResizeFilter(image, newWidth, newHight);
+				filterHistory.push_back("Resizing");
+
+				
+				pause();
+				break;
+			}
+
+			case 7:
+			{
+				NewFilter(redoFilter, redoHistory);
+				apliedFilter.push(image);
+				infrared_color(image);
+				filterHistory.push_back("InfraredColor");
+				pause();
+			}
+
+			case 97:
+			{
+				if (apliedFilter.empty())
+				{
+					cout << "No filters applied yet.\n";
+				}
+				else
+				{
+					cout << "Applied filters history: [";
+
+					
+
+					for (size_t i = 0; i < filterHistory.size(); ++i)
+					{
+						cout << filterHistory[i]; 
+
+						
+						if (i < filterHistory.size() - 1)
+						{
+							cout << ", ";
+						}
+					}
+					cout << "]\n"; 
+
+					cout << "Total: " << filterHistory.size() << " filter(s)\n";
+				}
+				
+				pause();
+				break;
+			}
+
+
+			case 98:
+			{
+				SaveImage(image);
+				break;
+			}
+
+			case 99:
+			{
+				if (!apliedFilter.empty())
+				{
+
+					redoFilter.push(image);
+					image = apliedFilter.top();
+					
+					apliedFilter.pop();
+
+					if( !filterHistory.empty() )
+					{
+						redoHistory.push(filterHistory.back());
+						filterHistory.pop_back();
+					}
+
+					cout << "Undid last filter.\n";
+				}
+				else
+				{
+					cout << "No filters to undo.\n";
+				}
+
+				
+				pause();
+				break;
+			}
+
+			case 100:
+			{
+				if (!redoFilter.empty())
+				{
+					apliedFilter.push(image);
+					image = redoFilter.top();
+					
+					redoFilter.pop();
+
+					if (!redoHistory.empty())
+					{
+						filterHistory.push_back(redoHistory.top());
+						redoHistory.pop();
+					}
+					cout << "Redid last undone filter.\n";
+				}
+				else
+				{
+					cout << "No filters to redo.\n";
+				}
+				
+				pause();
+				break;
+				
+			}
+			case 101:
+			{
+				running = false;
+				SaveImage(image);
+				cout << "Exiting application.\n";
+				break;
+			}
+
+			case 0:
+			{
+				running = false;
+				cout << "Exiting application.\n";
+				break;
+			}
+			default:
+			{
+				cout << "Invalid choice. Please try again.\n";
+				break;
+			}
+			}
+
+
+
+
+		}
+		catch (const exception&)
+		{
+			cout << "\nAn error occurred. Please try again.\n";
+		}
+	}
+
+
+	return 0;
+
+
+
+
+
+
+	
+
+	
+
+
+	
+}
+
+
+
+
+/*
+Image image = LoadImage();
+
+
+
+
+
+
+
+
+
+SaveImage(image);
+*/
+
+/*GrayScaleFilter(image);*/
 	//BlackAndWhiteFilter(image);
 	//BlackAndWhiteOtsualgorithm(image);
 	//IvertImageFilter(image);
@@ -742,19 +1252,22 @@ int main()
 	//FlipImageFilter(image, both);
 	//CropingImageFilter(image, 500 , 500, 1000 , 1000);
 	//Image Cropped = CropingImageFilter(image, 960 , 0, 960, 1080);
-	Image Resized = ImageResizeFilter(image, 2000, 2000);
+	//Image Resized = ImageResizeFilter(image, 2000, 2000);
 	//InfraredImageFilter(image);
-	SaveImage(Resized);
+	//SaveImage(Resized);
 	//IR(image);
 	//infrared_color(image);
+	//DetectEdges(image);
+	//RotateImageFilter90(image);
+	//SunLightImageFilter(image, 25);
+	//OldTVImageFilter(image);
+	//PurpleImageFilter(image);
+	//DetectEdges(image);
 
-	//mergeImages(image);
+
+//mergeImages(image);
 
 	//SaveImage(Cropped);
 
 	//SaveImage(image);
-
-
-	
-}
 
