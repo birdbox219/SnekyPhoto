@@ -1364,6 +1364,6 @@ SaveImage(image);
 
 	//SaveImage(Cropped);
 
-	SaveImage(image);
+	//SaveImage(image);
 
 
