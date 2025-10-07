@@ -210,48 +210,48 @@ void GrayScaleFilter(Image& image)
 }
 
 
-void BlackAndWhiteFilter(Image& image)
-{
-	cout << "\nConverting image to BlackaAndWhite..." << endl;
-
-	unsigned int threshold = 128;
-
-	for (int i = 0; i < image.width; ++i)
-	{
-		for (int j = 0; j < image.height; ++j)
-		{
-			unsigned int brightnes = 0;
-			
-			
-			for (int k = 0; k < 3; ++k) 
-			{
-				 brightnes+= image(i, j, k);
-			}
-
-			unsigned int avg   = brightnes / 3;
-
-			unsigned char whitVlaue = 255;
-			unsigned char blackVlaue = 0;
-
-			if (avg >= threshold)
-			{
-				image(i, j, 0) = whitVlaue;
-				image(i, j, 1) = whitVlaue;
-				image(i, j, 2) = whitVlaue;
-			}
-
-			else
-			{
-				image(i, j, 0) = blackVlaue;
-				image(i, j, 1) = blackVlaue;
-				image(i, j, 2) = blackVlaue;
-			}
-
-
-		}
-	}
-	cout << "BlackAndWhite conversion complete." << endl;
-}
+//void BlackAndWhiteFilter(Image& image)
+//{
+//	cout << "\nConverting image to BlackaAndWhite..." << endl;
+//
+//	unsigned int threshold = 128;
+//
+//	for (int i = 0; i < image.width; ++i)
+//	{
+//		for (int j = 0; j < image.height; ++j)
+//		{
+//			unsigned int brightnes = 0;
+//			
+//			
+//			for (int k = 0; k < 3; ++k) 
+//			{
+//				 brightnes+= image(i, j, k);
+//			}
+//
+//			unsigned int avg   = brightnes / 3;
+//
+//			unsigned char whitVlaue = 255;
+//			unsigned char blackVlaue = 0;
+//
+//			if (avg >= threshold)
+//			{
+//				image(i, j, 0) = whitVlaue;
+//				image(i, j, 1) = whitVlaue;
+//				image(i, j, 2) = whitVlaue;
+//			}
+//
+//			else
+//			{
+//				image(i, j, 0) = blackVlaue;
+//				image(i, j, 1) = blackVlaue;
+//				image(i, j, 2) = blackVlaue;
+//			}
+//
+//
+//		}
+//	}
+//	cout << "BlackAndWhite conversion complete." << endl;
+//}
 
 void BlackAndWhiteOtsualgorithm(Image& image)
 {
@@ -273,33 +273,38 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 
 			brightnesLevels[index] = avg;
 			histogram[avg]++;
+			index++;
 		}
 	}
 
 	//Otsu algorithm
-	double sumAll = 0;  
-	for (int t = 0; t < 256; ++t) sumAll += t * histogram[t];
+	double totalBrightnesSum = 0;  
+	for (int t = 0; t < 256; ++t) totalBrightnesSum += t * histogram[t];
 
-	double sumB = 0;  
-	int wB = 0;      
-	int wF = 0;       
+	double sumOfbirghtnessInBackground = 0;  
+	int weightOfBackground = 0;
+	int weightOfForground = 0;
 
 	double maxVar = 0;
 	int Threshold = 0;
 
 	for (int t = 0; t < 256; ++t) {
-		wB += histogram[t];                
-		if (wB == 0) continue;        
+		weightOfBackground += histogram[t];                
+		if (weightOfBackground == 0) continue;
 
-		wF = totalPixels - wB;        
-		if (wF == 0) break;           
+		weightOfForground = totalPixels - weightOfBackground;
+		if (weightOfForground == 0) break;
 
-		sumB += t * histogram[t];          
+		sumOfbirghtnessInBackground += t * histogram[t];
 
-		double mB = sumB / wB;               
-		double mF = (sumAll - sumB) / wF;    
+		double avgBrightnesOfBackground = sumOfbirghtnessInBackground / weightOfBackground;
+		double avgBrightnesOfForground = (totalBrightnesSum - sumOfbirghtnessInBackground) / weightOfForground;
 
-		double betweenVar = (double)wB * (double)wF * (mB - mF) * (mB - mF);
+		double betweenVar = 
+			(double)weightOfBackground *
+			(double)weightOfForground *
+			(avgBrightnesOfBackground - avgBrightnesOfForground) *
+			(avgBrightnesOfBackground - avgBrightnesOfForground);
 
 		if (betweenVar > maxVar) {
 			maxVar = betweenVar;
@@ -310,11 +315,25 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 	index = 0;
 	for (int i = 0; i < image.width; ++i) {
 		for (int j = 0; j < image.height; ++j, ++index) {
-			unsigned char gray = brightnesLevels[index];
-			unsigned char val = (gray >= Threshold) ? 255 : 0;
-			image(i, j, 0) = val;
-			image(i, j, 1) = val;
-			image(i, j, 2) = val;
+			
+			if (brightnesLevels[index] >= Threshold)
+			{
+				unsigned char val = 255;
+				image(i, j, 0) = val;
+				image(i, j, 1) = val;
+				image(i, j, 2) = val;
+			}
+
+			else
+				{
+				unsigned char val = 0;
+				image(i, j, 0) = val;
+				image(i, j, 1) = val;
+				image(i, j, 2) = val;
+			}
+				
+				
+				
 		}
 	}
 
