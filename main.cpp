@@ -49,9 +49,9 @@ Image LoadImage()
 	catch (const std::exception&)
 	{
 		cout << "Failed To load";
-		
+
 	}
-		
+
 }
 
 
@@ -184,7 +184,7 @@ void ClaearScreen()
 // --------------------------//
 void GrayScaleFilter(Image& image)
 {
-	
+
 	cout << "\nConverting image to grayscale..." << endl;
 	for (int i = 0; i < image.width; ++i) {
 		for (int j = 0; j < image.height; ++j) {
@@ -206,7 +206,7 @@ void GrayScaleFilter(Image& image)
 		}
 	}
 	cout << "Grayscale conversion complete." << endl;
-	
+
 }
 
 
@@ -221,14 +221,14 @@ void BlackAndWhiteFilter(Image& image)
 		for (int j = 0; j < image.height; ++j)
 		{
 			unsigned int brightnes = 0;
-			
-			
-			for (int k = 0; k < 3; ++k) 
+
+
+			for (int k = 0; k < 3; ++k)
 			{
-				 brightnes+= image(i, j, k);
+				brightnes += image(i, j, k);
 			}
 
-			unsigned int avg   = brightnes / 3;
+			unsigned int avg = brightnes / 3;
 
 			unsigned char whitVlaue = 255;
 			unsigned char blackVlaue = 0;
@@ -258,7 +258,7 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 	vector <int> histogram(256, 0);
 	cout << "\nConverting image to BlackaAndWhite using Otsu algorithm..." << endl;
 	int totalPixels = image.width * image.height;
-	int index = 0; 
+	int index = 0;
 	vector <unsigned char> brightnesLevels(totalPixels);
 	for (int i = 0; i < image.width; ++i)
 	{
@@ -326,10 +326,10 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 void IvertImageFilter(Image& image)
 {
 	cout << "\nInverting image colors..." << endl;
-	for (int i = 0;i < image.width; ++i) {
+	for (int i = 0; i < image.width; ++i) {
 		for (int j = 0; j < image.height; ++j) {
-			for (int k = 0; k < 3; ++k) { 
-				image(i, j, k) = 255 - image(i, j, k); 
+			for (int k = 0; k < 3; ++k) {
+				image(i, j, k) = 255 - image(i, j, k);
 			}
 		}
 	}
@@ -344,7 +344,7 @@ void FlipImageFilterV(Image& image)
 	cout << "\nFlipping image vertically..." << endl;
 	for (int i = 0; i < image.width; ++i)
 	{
-		for (int j = 0; j < image.height / 2;++j )
+		for (int j = 0; j < image.height / 2; ++j)
 		{
 			for (int k = 0; k < 3; ++k)
 			{
@@ -354,7 +354,7 @@ void FlipImageFilterV(Image& image)
 			}
 		}
 	}
-		
+
 
 
 
@@ -367,12 +367,12 @@ void FlipImageFilterH(Image& image)
 	cout << "\nFlipping image horizontaly..." << endl;
 	for (int i = 0; i < image.width / 2; ++i)
 	{
-		for (int j = 0; j < image.height ;++j)
+		for (int j = 0; j < image.height; ++j)
 		{
 			for (int k = 0; k < 3; ++k)
 			{
 				tmpImage = image(i, j, k);
-				image(i, j, k) = image(image.width - i - 1, j , k);
+				image(i, j, k) = image(image.width - i - 1, j, k);
 				image(image.width - i - 1, j, k) = tmpImage;
 			}
 		}
@@ -434,39 +434,40 @@ const char* flipTypeToString(FlipType type) {
 }
 
 // Done by Mahmoud Elsayed
-void CropingImageFilter(Image& image , int x , int y , int Cwidth , int Chight)
+Image CropingImageFilter(Image& image, int x, int y, int Cwidth, int Chight)
 {
-	
+
 
 	cout << "\n Croping image ..." << endl;
 
-	Image Cropping(Cwidth , Chight );
+	Image Cropping(Cwidth, Chight);
 
 	if ((x + Cwidth) <= image.width && (y + Chight) <= image.height)
 	{
 		for (int i = 0; i < Cwidth; ++i)
 		{
-			for (int j = 0 ; j < Chight; ++j)
+			for (int j = 0; j < Chight; ++j)
 			{
 
 				int offsetx = x + i;
 				int offsety = y + j;
 				for (int k = 0; k < 3; ++k)
 				{
-					
+
 					Cropping(i, j, k) = image(offsetx, offsety, k);
-					
+
 				}
 
 
-					
+
 			}
 		}
 		cout << "Cropping image complete." << endl;
 		image =  Cropping;
 		
 
-		
+
+
 	}
 	else
 	{
@@ -488,7 +489,7 @@ void ImageResizeFilter(Image& image, int newWidth, int newHight)
 
 	for (int i = 0; i < newWidth; ++i)
 	{
-		for (int j = 0 ; j < newHight; ++j)
+		for (int j = 0; j < newHight; ++j)
 		{
 			int changei = (int)(i * Si);
 			int changej = (int)(j * Sj);
@@ -509,9 +510,9 @@ Image resizeImage(const Image& original, int targetwidth, int targetheight)
 	Image resized(targetwidth, targetheight);
 	int originalwidth = original.width;
 	int originalheight = original.height;
-	for (int new_x = 0;new_x < targetwidth;new_x++)
+	for (int new_x = 0; new_x < targetwidth; new_x++)
 	{
-		for (int new_y = 0;new_y < targetheight;new_y++)
+		for (int new_y = 0; new_y < targetheight; new_y++)
 		{
 			int old_x = new_x * originalwidth / targetwidth;
 			int old_y = new_y * originalheight / targetheight;
@@ -654,7 +655,7 @@ void AdjustBrightness(Image& img, bool lighten, int percent)
 
 
 
-	
+
 
 
 
@@ -908,6 +909,179 @@ void Rotation(Image& image) {
 		}
 		image = rotated;
 	}
+}
+
+
+
+
+
+
+// Filter No.9 Image Frames (done by: Youssif Elnahs) 
+
+void AddFrame(Image& image) {
+	// choosing frame thickness
+	int frameThickness;
+	cout << "Enter frame thickness (in pixels):\n"
+		<< "10 -> thin frame\n"
+		<< "25 -> normal frame\n"
+		<< ">25 -> thick frame\n"
+		<< "or just type randomly: ";
+	cin >> frameThickness;
+
+	// simple frame or decorated
+	int frameType;
+	cout<< "\nChoose frame type:\n"
+		<< "1. Simple Frame\n"
+		<< "2.Decorative Frame\n"
+		<< "Enter choice : ";
+	cin >> frameType;
+
+	// choosing decorated frame options
+	int decorationType = 0;
+	if (frameType == 2) {
+		cout << "\nChoose Decorated Frame Style:\n"
+			<< "1. Gradient Frame\n"
+			<< "2. Mirror Frame\n"
+			<< "3. Double (Layered) Frame\n"
+			<< "4. Patterned Frame (Texture)\n"
+			<< "5. Glow Frame\n"
+			<< "6. 3D Shadow Frame\n"
+			<< "7. Artistic Pattern Frame\n"
+			<< "8. Blurred Frame\n"
+			<< ">> ";
+		cin >> decorationType;
+	}
+
+	// Choosing frame color
+	int r, g, b;
+	cout << "\nEnter frame color (R G B): ";
+	cin >> r >> g >> b;
+
+	int newWidth = image.width + 2 * frameThickness;
+	int newHeight = image.height + 2 * frameThickness;
+
+	Image framedImage(newWidth, newHeight);
+
+	// Three nested loops: i → width, j → height, k → channels
+	for (int i = 0; i < newWidth; i++) {
+		for (int j = 0; j < newHeight; j++) {
+			for (int k = 0; k < 3; k++) {
+				// Check if pixel belongs to the frame region
+				if (i < frameThickness || i >= newWidth - frameThickness ||
+					j < frameThickness || j >= newHeight - frameThickness) {
+
+					// Simple or Decorated
+					if (frameType == 1) {
+						// Simple solid color
+						if (k == 0) framedImage(i, j, k) = r;
+						else if (k == 1) framedImage(i, j, k) = g;
+						else framedImage(i, j, k) = b;
+					}
+					// Decorated Frames
+					else {
+						switch (decorationType) {
+
+						case 1: { // Gradient Frame
+							int dist = min(min(i, newWidth - 1 - i), min(j, newHeight - 1 - j));
+							double ratio = (double)dist / frameThickness;
+							int base = (k == 0 ? r : (k == 1 ? g : b));
+							int val = (int)(base * ratio + 255 * (1 - ratio));
+							framedImage(i, j, k) = (unsigned char)min(max(val, 0), 255);
+							break;
+						}
+
+						case 2: { // Mirror Frame
+							int srcX = i - frameThickness;
+							int srcY = j - frameThickness;
+
+							if (srcX < 0) srcX = -srcX - 1;
+							if (srcX >= image.width) srcX = 2 * image.width - srcX - 1;
+							if (srcY < 0) srcY = -srcY - 1;
+							if (srcY >= image.height) srcY = 2 * image.height - srcY - 1;
+
+							srcX = max(0, min(srcX, image.width - 1));
+							srcY = max(0, min(srcY, image.height - 1));
+
+							framedImage(i, j, k) = image(srcX, srcY, k);
+							break;
+						}
+
+						case 3: { // Double (Layered) Frame
+							int dist = min(min(i, newWidth - 1 - i), min(j, newHeight - 1 - j));
+							int outerBand = frameThickness / 3;
+							int base = (k == 0 ? r : (k == 1 ? g : b));
+
+							if (dist < outerBand)
+								framedImage(i, j, k) = (unsigned char)min(base + 50, 255);
+							else
+								framedImage(i, j, k) = base;
+							break;
+						}
+
+						case 4: { // Patterned Frame
+							int stripe = 8;
+							int pattern = ((i / stripe) + (j / stripe)) % 2;
+							int base = (k == 0 ? r : (k == 1 ? g : b));
+							framedImage(i, j, k) = (pattern == 0) ? base : (255 - base);
+							break;
+						}
+
+						case 5: { // Glow Frame
+							int dist = min(min(i, newWidth - 1 - i), min(j, newHeight - 1 - j));
+							double ratio = 1.0 - (double)dist / frameThickness;
+							int base = (k == 0 ? r : (k == 1 ? g : b));
+							int val = min(255, (int)(base + ratio * 100));
+							framedImage(i, j, k) = (unsigned char)val;
+							break;
+						}
+
+						case 6: { // 3D Shadow Frame
+							int base = (k == 0 ? r : (k == 1 ? g : b));
+							if (i > newWidth - frameThickness * 0.7 || j > newHeight - frameThickness * 0.7)
+								framedImage(i, j, k) = (unsigned char)(base * 0.5);  // shadowed area
+							else if (i < frameThickness * 0.3 || j < frameThickness * 0.3)
+								framedImage(i, j, k) = (unsigned char)min(base + 60, 255);  // light area
+							else
+								framedImage(i, j, k) = base;
+							break;
+						}
+
+						case 7: { // Artistic Pattern Frame
+							int base = (k == 0 ? r : (k == 1 ? g : b));
+							int seed = (i * 31 + j * 17 + k * 13) % 255;
+							framedImage(i, j, k) = (unsigned char)((base + seed) / 2);
+							break;
+						}
+
+						case 8: { // Blurred Frame
+							int x0 = max(0, min(i - frameThickness, image.width - 1));
+							int y0 = max(0, min(j - frameThickness, image.height - 1));
+							int sum = 0, count = 0;
+							for (int dx = -1; dx <= 1; dx++) {
+								for (int dy = -1; dy <= 1; dy++) {
+									int xx = max(0, min(x0 + dx, image.width - 1));
+									int yy = max(0, min(y0 + dy, image.height - 1));
+									sum += image(xx, yy, k);
+									count++;
+								}
+							}
+							int avg = (count > 0) ? sum / count : (k == 0 ? r : (k == 1 ? g : b));
+							framedImage(i, j, k) = (unsigned char)((avg + (k == 0 ? r : (k == 1 ? g : b))) / 2);
+							break;
+						}
+						}
+					}
+				}
+				else {
+					// Copy pixel from original image
+					framedImage(i, j, k) = image(i - frameThickness, j - frameThickness, k);
+				}
+			}
+		}
+	}
+
+	// Replace original with framed version
+	image = framedImage;
 }
 
 
