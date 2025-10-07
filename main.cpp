@@ -158,8 +158,8 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 
 		sumB += t * histogram[t];          // sum of intensities for background
 
-		double mB = sumB / wB;               // mean intensity of background
-		double mF = (sumAll - sumB) / wF;    // mean intensity of foreground
+		double mB = sumB / wB;               
+		double mF = (sumAll - sumB) / wF;    
 
 		double betweenVar = (double)wB * (double)wF * (mB - mF) * (mB - mF);
 
@@ -638,7 +638,49 @@ void infrared_color(Image& img)
 			img(i, j, 2) = B;
 		}
 	}
-}
+
+
+//enum Rotate
+//{
+//	 rotate90 ,
+//	 rotate180,
+//	 rotate270,
+//
+//
+//};
+
+
+//void RotateImageFilter90(Image& image)
+//{
+//	Image Rotated(image.height, image.width);
+//
+//	for (int i = 0; i < image.width; i++) {
+//
+//		for (int j = 0; j < image.height; j++)
+//		{
+//			for (int k = 0; k < image.channels; ++k)
+//			{
+//				Rotated(j, image.width - 1 - i, k) = image(i, j, k);
+//			}
+//		}
+//
+//	}
+//
+//	image = Rotated;
+//		cout << "done";
+//
+//}
+
+
+
+
+
+
+
+		
+
+
+
 
 	
 
