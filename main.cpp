@@ -881,6 +881,9 @@ void SkewImage(Image& image)
 
 	image = result;
 }
+
+
+
 void SobelEdge(Image& img)
 {
 	for (int x = 0; x < img.width; x++)
