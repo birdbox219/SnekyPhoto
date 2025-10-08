@@ -108,6 +108,7 @@ int LoadMenu()
 		cout << "  5. Crop Image\n";
 		cout << "  6. Resize Image\n";
 		cout << "  7. Infrared Color Effect\n";
+		cout << "  8. Frame Image\n";
 
 		HeaderLine();
 		cout << "  MANAGEMENT:\n";
@@ -178,10 +179,16 @@ void ClaearScreen()
 	system("clear");
 #endif
 }
+
+
+//aded by Mahmoud Elsayed
+//LogicFilters//
+//-------------------------------------------------------------------------------------//
 	
 
 
 // --------------------------//
+// Filter No.1 Grayscale (done by: Adham )
 void GrayScaleFilter(Image& image)
 {
 
@@ -210,49 +217,8 @@ void GrayScaleFilter(Image& image)
 }
 
 
-//void BlackAndWhiteFilter(Image& image)
-//{
-//	cout << "\nConverting image to BlackaAndWhite..." << endl;
-//
-//	unsigned int threshold = 128;
-//
-//	for (int i = 0; i < image.width; ++i)
-//	{
-//		for (int j = 0; j < image.height; ++j)
-//		{
-//			unsigned int brightnes = 0;
-//			
-//			
-//			for (int k = 0; k < 3; ++k) 
-//			{
-//				 brightnes+= image(i, j, k);
-//			}
-//
-//			unsigned int avg   = brightnes / 3;
-//
-//			unsigned char whitVlaue = 255;
-//			unsigned char blackVlaue = 0;
-//
-//			if (avg >= threshold)
-//			{
-//				image(i, j, 0) = whitVlaue;
-//				image(i, j, 1) = whitVlaue;
-//				image(i, j, 2) = whitVlaue;
-//			}
-//
-//			else
-//			{
-//				image(i, j, 0) = blackVlaue;
-//				image(i, j, 1) = blackVlaue;
-//				image(i, j, 2) = blackVlaue;
-//			}
-//
-//
-//		}
-//	}
-//	cout << "BlackAndWhite conversion complete." << endl;
-//}
 
+// Filter No.2 Black and White using Otsu algorithm (done by: Mahmoud Elsayed )
 void BlackAndWhiteOtsualgorithm(Image& image)
 {
 	vector <int> histogram(256, 0);
@@ -341,7 +307,7 @@ void BlackAndWhiteOtsualgorithm(Image& image)
 }
 
 
-//Done by MahmoudELsayed
+// Filter No.3 Invert Colors (done by: Youssif Elnahs )
 void IvertImageFilter(Image& image)
 {
 	cout << "\nInverting image colors..." << endl;
@@ -356,172 +322,7 @@ void IvertImageFilter(Image& image)
 }
 
 
-
-void FlipImageFilterV(Image& image)
-{
-	unsigned char tmpImage;
-	cout << "\nFlipping image vertically..." << endl;
-	for (int i = 0; i < image.width; ++i)
-	{
-		for (int j = 0; j < image.height / 2; ++j)
-		{
-			for (int k = 0; k < 3; ++k)
-			{
-				tmpImage = image(i, j, k);
-				image(i, j, k) = image(i, image.height - j - 1, k);
-				image(i, image.height - j - 1, k) = tmpImage;
-			}
-		}
-	}
-
-
-
-
-	cout << "Vertical flip complete." << endl;
-}
-//Done by MahmoudELsayed
-void FlipImageFilterH(Image& image)
-{
-	unsigned char tmpImage;
-	cout << "\nFlipping image horizontaly..." << endl;
-	for (int i = 0; i < image.width / 2; ++i)
-	{
-		for (int j = 0; j < image.height; ++j)
-		{
-			for (int k = 0; k < 3; ++k)
-			{
-				tmpImage = image(i, j, k);
-				image(i, j, k) = image(image.width - i - 1, j, k);
-				image(image.width - i - 1, j, k) = tmpImage;
-			}
-		}
-	}
-
-
-
-
-	cout << "horizontal flip complete." << endl;
-}
-
-/*
-ImageFlipingStateMachine
-we will later implment other Fliping filters like 90-Degrees mirror diagonal, etc..
-*/
-
-
-enum FlipType
-{
-	None = 0,
-	Vertical,
-	Horizontal,
-	both,
-};
-
-//Done by MahmoudELsayed
-
-
-void FlipImageFilter(Image& image, FlipType flip)
-{
-	switch (flip)
-	{
-	case None:
-		// do nothing
-		break;
-	case Vertical:
-		FlipImageFilterV(image);
-		break;
-	case Horizontal:
-		FlipImageFilterH(image);
-		break;
-	case both:
-
-		FlipImageFilterV(image);
-		FlipImageFilterH(image);
-
-		break;
-	}
-}
-
-const char* flipTypeToString(FlipType type) {
-	switch (type) {
-	case Vertical: return "Vertical";
-	case Horizontal: return "Horizontal";
-	case both: return "Both";
-	case None: return "None";
-	}
-	return "Unknown";
-}
-
-// Done by Mahmoud Elsayed
-Image CropingImageFilter(Image& image, int x, int y, int Cwidth, int Chight)
-{
-
-
-	cout << "\n Croping image ..." << endl;
-
-	Image Cropping(Cwidth, Chight);
-
-	if ((x + Cwidth) <= image.width && (y + Chight) <= image.height)
-	{
-		for (int i = 0; i < Cwidth; ++i)
-		{
-			for (int j = 0; j < Chight; ++j)
-			{
-
-				int offsetx = x + i;
-				int offsety = y + j;
-				for (int k = 0; k < 3; ++k)
-				{
-
-					Cropping(i, j, k) = image(offsetx, offsety, k);
-
-				}
-
-
-
-			}
-		}
-		cout << "Cropping image complete." << endl;
-		image =  Cropping;
-		
-
-
-
-	}
-	else
-	{
-		throw runtime_error("Image Dimesntion not compatiple");
-	}
-}
-
-
-void ImageResizeFilter(Image& image, int newWidth, int newHight)
-{
-	cout << "\n Resizing image ..." << endl;
-	Image risizedImage(newWidth, newHight);
-
-	/*float Si = (image.width - 1.0f) / (float)newWidth ;
-	float Sj = (image.height - 1.0f) / (float)newHight ;*/
-
-	float Si = (newWidth == 1) ? 0 : (image.width - 1.0f) / (newWidth - 1.0f);
-	float Sj = (newHight == 1) ? 0 : (image.height - 1.0f) / (newHight - 1.0f);
-
-	for (int i = 0; i < newWidth; ++i)
-	{
-		for (int j = 0; j < newHight; ++j)
-		{
-			int changei = (int)(i * Si);
-			int changej = (int)(j * Sj);
-			for (int k = 0; k < 3; ++k)
-			{
-				risizedImage(i, j, k) = image(changei, changej, k);
-			}
-		}
-	}
-	cout << "Reszing image complete." << endl;
-	image = risizedImage;
-}
-// merged filter done by Adham.
+// Filter No.4 merge Image (done by: Mahmoud Elsayed  and Adham )
 
 Image resizeImage(const Image& original, int targetwidth, int targetheight)
 {
@@ -543,11 +344,6 @@ Image resizeImage(const Image& original, int targetwidth, int targetheight)
 	}
 	return resized;
 }
-
-
-
-
-
 
 
 
@@ -640,252 +436,105 @@ void mergeImages()
 	cout << " merged image saved as merged.png\n";
 }
 
-// brightness filter done by adham.
-void AdjustBrightness(Image& img, bool lighten, int percent)
-{
-	double factor;
-	if (lighten) {
-		factor = 1.0 + (percent / 100.0);
-	}
-	else {
-		factor = 1.0 - (percent / 100.0);
-		if (factor < 0) factor = 0;
-	}
 
-	for (int i = 0; i < img.width; i++)
+// filter No.5 Flip Image (done by: Mahmoud Elsayed )
+void FlipImageFilterV(Image& image)
+{
+	unsigned char tmpImage;
+	cout << "\nFlipping image vertically..." << endl;
+	for (int i = 0; i < image.width; ++i)
 	{
-		for (int j = 0; j < img.height; j++)
+		for (int j = 0; j < image.height / 2; ++j)
 		{
-			for (int k = 0; k < 3; k++)
+			for (int k = 0; k < 3; ++k)
 			{
-				int newval = img(i, j, k) * factor;
-				if (newval > 255) newval = 255;
-				if (newval < 0) newval = 0;
-				img(i, j, k) = newval;
+				tmpImage = image(i, j, k);
+				image(i, j, k) = image(i, image.height - j - 1, k);
+				image(i, image.height - j - 1, k) = tmpImage;
 			}
 		}
 	}
+
+
+
+
+	cout << "Vertical flip complete." << endl;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-void infrared_color(Image& img)
+//Done by MahmoudELsayed
+void FlipImageFilterH(Image& image)
 {
-	for (int i = 1; i < img.width; i++) {
-		for (int j = 1; j < img.height; j++) {
-			int R = img(i, j, 0);
-			int G = img(i, j, 1);
-			int B = img(i, j, 2);
-
-			R = 255;
-			G = 255 - G;
-			//B = 255 - B;
-
-
-			
-			img(i, j, 0) = R;
-			img(i, j, 1) = G;
-			img(i, j, 2) = B;
-		}
-	}
-}
-
-
-
-void SunLightImageFilter(Image& image , int sunBrightness)
-{
-	
-
-
-
-	for(int i = 0; i < image.width; ++i) {
-		for (int j = 0; j < image.height; ++j) {
-			int R = image(i, j, 0)+sunBrightness;
-			int G = image(i, j, 1) + sunBrightness/2;
-			float B =  image(i, j, 2) * 0.8f;
-			
-			
-
-			image(i, j, 0) = min(255, R);
-			image(i, j, 1) = min(255, G);
-			image(i, j, 2) = max(0.0f , B);
-
-
-			
-			
-		}
-	}
-
-}
-
-
-
-
-template <typename T>
-T clamp(T value, T minValue, T maxValue) {
-	if (value < minValue) return minValue;
-	if (value > maxValue) return maxValue;
-	return value;
-}
-
-
-void OldTVImageFilter(Image& image)
-{ 
-
-	GrayScaleFilter(image);
-	int noiseDistortion = 30;
-	double blackLInesHighlight = 0.3;
-	int lineThickness = 5;
-	int lineSpacing = 10;
-
-
-	double vigS = 0.4;
-	double vigP = 2.5;
-	double centerX = image.width / 2.0;
-	double centerY = image.height / 2.0;
-
-	for(int i = 0; i < image.width; ++i) {
-		
-		for (int j = 0; j < image.height; ++j) {
-
-			double dx = (i - centerX) / centerX;
-			double dy = (j - centerY) / centerY;
-
-			double distance = sqrt(dx * dx + dy * dy);
-			double vignette = 1.0 - vigS * pow(distance, vigP);
-
-			if (vignette < 0.0)
-			{
-				vignette = 0.0;
-			}
-			
-
-			
-
-			for (int k = 0; k < 3; ++k) {
-				
-				int newDisotrtion = image(i, j, k);
-
-				int jitterAmount = (rand() % noiseDistortion) + (rand() % noiseDistortion) + (rand() % noiseDistortion) - (3 * noiseDistortion / 2);
-				newDisotrtion += jitterAmount;
-				
-				if ((j % lineSpacing) < lineThickness)
-				{
-					
-					newDisotrtion = static_cast<int>(newDisotrtion * (1.0 - blackLInesHighlight));
-				}
-
-
-				newDisotrtion = static_cast<int>(newDisotrtion * vignette);
-
-				image(i, j, k) = clamp(newDisotrtion, 0, 255); 
-			}
-			
-		}
-	}
-}
-
-
-void PurpleImageFilter(Image& image)
-{
-
-	int purblePower = 50;
-	double R, G, B;
-	for (int i = 0; i < image.width; ++i) {
-		for (int j = 0; j < image.height; ++j) {
-			
-			R = image(i, j, 0) + purblePower;
-			G = image(i, j, 1) - purblePower / 2;
-			B = image(i, j, 2) + purblePower;
-
-			image(i, j, 0) = clamp(static_cast<int>(R), 0, 255);
-			image(i, j, 1) = clamp(static_cast<int>(G), 0, 255);
-			image(i, j, 2) = clamp(static_cast<int>(B), 0, 255);
-
-
-		}
-	}
-}
-
-
-
-
-
-
-
-		
-
-
-
-
-	
-
-
-
-// filter edges detector made by adham.
-void DetectEdges(Image& image)
-{
-
-	for (int i = 0; i < image.width; i++) {
-		for (int j = 0; j < image.height; j++) {
-			unsigned int avg = 0;
-			for (int k = 0; k < 3; k++) {
-				avg += image(i, j, k);
-			}
-			avg /= 3;
-			image(i, j, 0) = avg;
-			image(i, j, 1) = avg;
-			image(i, j, 2) = avg;
-		}
-	}
-
-	Image edges(image.width, image.height);
-	int threshold = 20;
-
-	for (int i = 0; i < image.width - 1; i++)
+	unsigned char tmpImage;
+	cout << "\nFlipping image horizontaly..." << endl;
+	for (int i = 0; i < image.width / 2; ++i)
 	{
-		for (int j = 0; j < image.height - 1; j++)
+		for (int j = 0; j < image.height; ++j)
 		{
-			int diff_X = abs(image(i, j, 0) - image(i + 1, j, 0));
-			int diff_Y = abs(image(i, j, 0) - image(i, j + 1, 0));
-
-			int edgeval = diff_X + diff_Y;
-
-			if (edgeval > threshold)
+			for (int k = 0; k < 3; ++k)
 			{
-				edges(i, j, 0) = edges(i, j, 1) = edges(i, j, 2) = 0;
-			}
-			else {
-				edges(i, j, 0) = edges(i, j, 1) = edges(i, j, 2) = 255;
+				tmpImage = image(i, j, k);
+				image(i, j, k) = image(image.width - i - 1, j, k);
+				image(image.width - i - 1, j, k) = tmpImage;
 			}
 		}
 	}
 
-	image = edges;
+
+
+
+	cout << "horizontal flip complete." << endl;
 }
 
+/*
+ImageFlipingStateMachine
+*/
 
 
+enum FlipType
+{
+	None = 0,
+	Vertical,
+	Horizontal,
+	both,
+};
+
+//Done by MahmoudELsayed
 
 
+void FlipImageFilter(Image& image, FlipType flip)
+{
+	switch (flip)
+	{
+	case None:
+		// do nothing
+		break;
+	case Vertical:
+		FlipImageFilterV(image);
+		break;
+	case Horizontal:
+		FlipImageFilterH(image);
+		break;
+	case both:
 
+		FlipImageFilterV(image);
+		FlipImageFilterH(image);
 
+		break;
+	}
+}
+
+const char* flipTypeToString(FlipType type) {
+	switch (type) {
+	case Vertical: return "Vertical";
+	case Horizontal: return "Horizontal";
+	case both: return "Both";
+	case None: return "None";
+	}
+	return "Unknown";
+}
 
 
 // Filter No.6 Image Rotation (done by: Youssif Elnahs)
-
-
-void Rotation(Image& image) {
+void RotateImageFilter(Image& image) {
 
 	cout << "You Are Now on Image Rotaion Filter... :)\n";
 	short degree = 0;
@@ -930,14 +579,82 @@ void Rotation(Image& image) {
 	}
 }
 
+// Filter No.7 AdjustBrightness (done by: Adham )
+void AdjustBrightness(Image& img, bool lighten, int percent)
+{
+	double factor;
+	if (lighten) {
+		factor = 1.0 + (percent / 100.0);
+	}
+	else {
+		factor = 1.0 - (percent / 100.0);
+		if (factor < 0) factor = 0;
+	}
+
+	for (int i = 0; i < img.width; i++)
+	{
+		for (int j = 0; j < img.height; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				int newval = img(i, j, k) * factor;
+				if (newval > 255) newval = 255;
+				if (newval < 0) newval = 0;
+				img(i, j, k) = newval;
+			}
+		}
+	}
+}
 
 
 
+
+// Filter No.8 Crop Image (done by: Mahmoud Elsayed )
+Image CropingImageFilter(Image& image, int x, int y, int Cwidth, int Chight)
+{
+
+
+	cout << "\n Croping image ..." << endl;
+
+	Image Cropping(Cwidth, Chight);
+
+	if ((x + Cwidth) <= image.width && (y + Chight) <= image.height)
+	{
+		for (int i = 0; i < Cwidth; ++i)
+		{
+			for (int j = 0; j < Chight; ++j)
+			{
+
+				int offsetx = x + i;
+				int offsety = y + j;
+				for (int k = 0; k < 3; ++k)
+				{
+
+					Cropping(i, j, k) = image(offsetx, offsety, k);
+
+				}
+
+
+
+			}
+		}
+		cout << "Cropping image complete." << endl;
+		image =  Cropping;
+		
+
+
+
+	}
+	else
+	{
+		throw runtime_error("Image Dimesntion not compatiple");
+	}
+}
 
 
 // Filter No.9 Image Frames (done by: Youssif Elnahs) 
 
-void AddFrame(Image& image) {
+void AddFrameImageFilter(Image& image) {
 	// choosing frame thickness
 	int frameThickness;
 	cout << "Enter frame thickness (in pixels):\n"
@@ -949,7 +666,7 @@ void AddFrame(Image& image) {
 
 	// simple frame or decorated
 	int frameType;
-	cout<< "\nChoose frame type:\n"
+	cout << "\nChoose frame type:\n"
 		<< "1. Simple Frame\n"
 		<< "2.Decorative Frame\n"
 		<< "Enter choice : ";
@@ -1104,7 +821,85 @@ void AddFrame(Image& image) {
 }
 
 
+// filter edges detector made by adham.
+// Filter No.10 Edge Detection (done by: Adham )
+void DetectEdgesImageFilter(Image& image)
+{
 
+	for (int i = 0; i < image.width; i++) {
+		for (int j = 0; j < image.height; j++) {
+			unsigned int avg = 0;
+			for (int k = 0; k < 3; k++) {
+				avg += image(i, j, k);
+			}
+			avg /= 3;
+			image(i, j, 0) = avg;
+			image(i, j, 1) = avg;
+			image(i, j, 2) = avg;
+		}
+	}
+
+	Image edges(image.width, image.height);
+	int threshold = 20;
+
+	for (int i = 0; i < image.width - 1; i++)
+	{
+		for (int j = 0; j < image.height - 1; j++)
+		{
+			int diff_X = abs(image(i, j, 0) - image(i + 1, j, 0));
+			int diff_Y = abs(image(i, j, 0) - image(i, j + 1, 0));
+
+			int edgeval = diff_X + diff_Y;
+
+			if (edgeval > threshold)
+			{
+				edges(i, j, 0) = edges(i, j, 1) = edges(i, j, 2) = 0;
+			}
+			else {
+				edges(i, j, 0) = edges(i, j, 1) = edges(i, j, 2) = 255;
+			}
+		}
+	}
+
+	image = edges;
+}
+
+
+
+
+
+
+
+
+// Filter No.11 Resize Image (done by: Mahmoud Elsayed )
+
+
+void ImageResizeFilter(Image& image, int newWidth, int newHight)
+{
+	cout << "\n Resizing image ..." << endl;
+	Image risizedImage(newWidth, newHight);
+
+	/*float Si = (image.width - 1.0f) / (float)newWidth ;
+	float Sj = (image.height - 1.0f) / (float)newHight ;*/
+
+	float Si = (newWidth == 1) ? 0 : (image.width - 1.0f) / (newWidth - 1.0f);
+	float Sj = (newHight == 1) ? 0 : (image.height - 1.0f) / (newHight - 1.0f);
+
+	for (int i = 0; i < newWidth; ++i)
+	{
+		for (int j = 0; j < newHight; ++j)
+		{
+			int changei = (int)(i * Si);
+			int changej = (int)(j * Sj);
+			for (int k = 0; k < 3; ++k)
+			{
+				risizedImage(i, j, k) = image(changei, changej, k);
+			}
+		}
+	}
+	cout << "Reszing image complete." << endl;
+	image = risizedImage;
+}
 
 // Filter N0.12 - Blur Filter (done by Youssif Elnahas)
 
@@ -1138,6 +933,180 @@ void Blur(Image& image) {
 	}
 	image = blurred;
 }
+
+// Filter No.13 - Sun Light Effect (done by Mahmoud Elsayed)
+void SunLightImageFilter(Image& image, int sunBrightness)
+{
+
+
+
+
+	for (int i = 0; i < image.width; ++i) {
+		for (int j = 0; j < image.height; ++j) {
+			int R = image(i, j, 0) + sunBrightness;
+			int G = image(i, j, 1) + sunBrightness / 2;
+			float B = image(i, j, 2) * 0.8f;
+
+
+
+			image(i, j, 0) = min(255, R);
+			image(i, j, 1) = min(255, G);
+			image(i, j, 2) = max(0.0f, B);
+
+
+
+
+		}
+	}
+
+}
+
+
+// Filter No.15 - Old TV Effect (done by Mahmoud Elsayed)
+// we were using C++14 so we couldn't use std::clamp from <algorithm> and we used it alot so we made our own version of it.
+
+template <typename T>
+T clamp(T value, T minValue, T maxValue) {
+	if (value < minValue) return minValue;
+	if (value > maxValue) return maxValue;
+	return value;
+}
+
+
+void OldTVImageFilter(Image& image)
+{
+
+	GrayScaleFilter(image);
+	int noiseDistortion = 30;
+	double blackLInesHighlight = 0.3;
+	int lineThickness = 5;
+	int lineSpacing = 10;
+
+
+	double vigS = 0.4;
+	double vigP = 2.5;
+	double centerX = image.width / 2.0;
+	double centerY = image.height / 2.0;
+
+	for (int i = 0; i < image.width; ++i) {
+
+		for (int j = 0; j < image.height; ++j) {
+
+			double dx = (i - centerX) / centerX;
+			double dy = (j - centerY) / centerY;
+
+			double distance = sqrt(dx * dx + dy * dy);
+			double vignette = 1.0 - vigS * pow(distance, vigP);
+
+			if (vignette < 0.0)
+			{
+				vignette = 0.0;
+			}
+
+
+
+
+			for (int k = 0; k < 3; ++k) {
+
+				int newDisotrtion = image(i, j, k);
+
+				int jitterAmount = (rand() % noiseDistortion) + (rand() % noiseDistortion) + (rand() % noiseDistortion) - (3 * noiseDistortion / 2);
+				newDisotrtion += jitterAmount;
+
+				if ((j % lineSpacing) < lineThickness)
+				{
+
+					newDisotrtion = static_cast<int>(newDisotrtion * (1.0 - blackLInesHighlight));
+				}
+
+
+				newDisotrtion = static_cast<int>(newDisotrtion * vignette);
+
+				image(i, j, k) = clamp(newDisotrtion, 0, 255);
+			}
+
+		}
+	}
+}
+
+
+// Filter No.16 - Purple Filter (done by Mahmoud Elsayed)
+void PurpleImageFilter(Image& image)
+{
+
+	int purblePower = 50;
+	double R, G, B;
+	for (int i = 0; i < image.width; ++i) {
+		for (int j = 0; j < image.height; ++j) {
+
+			R = image(i, j, 0) + purblePower;
+			G = image(i, j, 1) - purblePower / 2;
+			B = image(i, j, 2) + purblePower;
+
+			image(i, j, 0) = clamp(static_cast<int>(R), 0, 255);
+			image(i, j, 1) = clamp(static_cast<int>(G), 0, 255);
+			image(i, j, 2) = clamp(static_cast<int>(B), 0, 255);
+
+
+		}
+	}
+}
+
+
+
+
+
+// Filter No.17 - Infrared Color Filter (done by Mahmoud Elsayed)
+void infraredColorImageFilter(Image& img)
+{
+	for (int i = 1; i < img.width; i++) {
+		for (int j = 1; j < img.height; j++) {
+			int R = img(i, j, 0);
+			int G = img(i, j, 1);
+			int B = img(i, j, 2);
+
+			R = 255;
+			G = 255 - G * 0.98f;
+			B = 255 - B * 0.95f;
+
+
+			
+			img(i, j, 0) = R;
+			img(i, j, 1) = G;
+			img(i, j, 2) = B;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+	
+
+
+
+
+
+
 
 
 
@@ -1228,7 +1197,7 @@ int main()
 				NewFilter(redoFilter, redoHistory);
 
 				apliedFilter.push(image);
-				BlackAndWhiteFilter(image);
+				BlackAndWhiteOtsualgorithm(image);
 				filterHistory.push_back("BlackAndWhite");
 
 				pause();
@@ -1368,9 +1337,22 @@ int main()
 			{
 				NewFilter(redoFilter, redoHistory);
 				apliedFilter.push(image);
-				infrared_color(image);
+				infraredColorImageFilter(image);
 				filterHistory.push_back("InfraredColor");
 				pause();
+				break;
+			}
+
+
+			case 8: 
+			{
+				NewFilter(redoFilter, redoHistory);
+				apliedFilter.push(image);
+				AddFrameImageFilter(image);
+				filterHistory.push_back("AddFrame");
+				pause();
+				break;
+
 			}
 
 			case 97:
@@ -1513,50 +1495,5 @@ int main()
 
 
 
-
-/*
-Image image = LoadImage();
-
-
-
-
-
-
-
-
-
-SaveImage(image);
-*/
-
-/*GrayScaleFilter(image);*/
-	//BlackAndWhiteFilter(image);
-	//BlackAndWhiteOtsualgorithm(image);
-	//IvertImageFilter(image);
-	//FlipImageFilter(image);
-	//Rotation(image);
-	//FlipImageFilterH(image);
-	//FlipImageFilter(image, both);
-	//CropingImageFilter(image, 500 , 500, 1000 , 1000);
-	//Image Cropped = CropingImageFilter(image, 960 , 0, 960, 1080);
-	//Image Resized = ImageResizeFilter(image, 2000, 2000);
-	//Blur(image);
-	//Image Resized = ImageResizeFilter(image, 2000, 2000);
-	//InfraredImageFilter(image);
-	//SaveImage(Resized);
-	//IR(image);
-	//infrared_color(image);
-	//DetectEdges(image);
-	//RotateImageFilter90(image);
-	//SunLightImageFilter(image, 25);
-	//OldTVImageFilter(image);
-	//PurpleImageFilter(image);
-	//DetectEdges(image);
-
-
-//mergeImages(image);
-
-	//SaveImage(Cropped);
-
-	//SaveImage(image);
-
+ 
 
