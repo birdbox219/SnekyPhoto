@@ -109,6 +109,7 @@ int LoadMenu()
 		cout << "  6. Resize Image\n";
 		cout << "  7. Infrared Color Effect\n";
 		cout << "  8. Frame Image\n";
+		cout << "  9. Old Tv \n";
 
 		HeaderLine();
 		cout << "  MANAGEMENT:\n";
@@ -977,7 +978,8 @@ void OldTVImageFilter(Image& image)
 {
 
 	GrayScaleFilter(image);
-	int noiseDistortion = 30;
+	//int noiseDistortion = 30;
+	int noiseDistortion = 60;
 	double blackLInesHighlight = 0.3;
 	int lineThickness = 5;
 	int lineSpacing = 10;
@@ -1353,6 +1355,16 @@ int main()
 				pause();
 				break;
 
+			}
+
+			case 9:
+			{
+				NewFilter(redoFilter, redoHistory);
+				apliedFilter.push(image);
+				OldTVImageFilter(image);
+				filterHistory.push_back("Old Tv");
+				pause();
+				break;
 			}
 
 			case 97:
