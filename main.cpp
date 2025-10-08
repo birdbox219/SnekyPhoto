@@ -48,26 +48,28 @@ void GrayScaleFilter(Image& image)
 {
 	
 	cout << "\nConverting image to grayscale..." << endl;
-	for (int i = 0; i < image.width; ++i) {
-		for (int j = 0; j < image.height; ++j) {
-			// Use a larger type like unsigned int to prevent overflow when summing up channel values
+	for (int i = 0; i < image.width; i++) 
+	{
+		for (int j = 0; j < image.height; j++) 
+		{
+			
 			unsigned int avg = 0;
 
-			// Accumulate pixel values for all channels (R, G, B)
-			for (int k = 0; k < 3; ++k) {
+			
+			for (int k = 0; k < 3; ++k) 
+			{
 				avg += image(i, j, k);
 			}
 
-			// Calculate the average value and cast it back to a byte
-			unsigned char gray_value = avg / 3;
+			
+			avg /=3;
 
-			// Set all channels to the average value to create a gray pixel
-			image(i, j, 0) = gray_value;
-			image(i, j, 1) = gray_value;
-			image(i, j, 2) = gray_value;
+			
+			image(i, j, 0) = avg;
+			image(i, j, 1) = avg;
+			image(i, j, 2) = avg;
 		}
 	}
-	cout << "Grayscale conversion complete." << endl;
 	
 }
 
@@ -566,12 +568,17 @@ void mergeImages()
 void AdjustBrightness(Image& img, bool lighten, int percent)
 {
 	double factor;
-	if (lighten) {
+	if (lighten) 
+	{
 		factor = 1.0 + (percent / 100.0);
 	}
-	else {
+	else 
+	{
 		factor = 1.0 - (percent / 100.0);
-		if (factor < 0) factor = 0;
+		if (factor < 0)
+		{
+			factor = 0;
+		}
 	}
 
 	for (int i = 0; i < img.width; i++)
@@ -592,7 +599,7 @@ void AdjustBrightness(Image& img, bool lighten, int percent)
 
 
 
-=======
+
 
 
 
@@ -640,51 +647,181 @@ void infrared_color(Image& img)
 	}
 }
 
+void OilPaint(Image& img, int win = 5)
+{
+	Image out(img.width, img.height);
+	int half = win / 2;
+
+	for (int x = 0; x < img.width; x++)
+	{
+		for (int y = 0; y < img.height; y++)
+		{
+			vector<int> cnt(256, 0);
+			vector<int> sumR(256, 0), sumG(256, 0), sumB(256, 0);
+
+
+			for (int dx = -half; dx <= half; dx++)
+			{
+				for (int dy = -half; dy <= half; dy++)
+				{
+					int nx = x + dx, ny = y + dy;
+					if (nx >= 0 && nx < img.width && ny >= 0 && ny < img.height)
+					{
+						int r = img(nx, ny, 0);
+						int g = img(nx, ny, 1);
+						int b = img(nx, ny, 2);
+
+						int inten = (r + g + b) / 3;
+
+						cnt[inten]++;
+						sumR[inten] += r;
+						sumG[inten] += g;
+						sumB[inten] += b;
+					}
+				}
+			}
+
+
+			int best = 0, mx = 0;
+			for (int i = 0; i < 256; i++)
+			{
+				if (cnt[i] > mx)
+				{
+					mx = cnt[i];
+					best = i;
+				}
+			}
+
+			out(x, y, 0) = sumR[best] / mx;
+			out(x, y, 1) = sumG[best] / mx;
+			out(x, y, 2) = sumB[best] / mx;
+		}
+	}
+
+	img = out;
+}
+
+void SkewImage(Image& image)
+{
+	float angle;
+	cout << "Enter skew angle (in degrees): ";
+	cin >> angle;
+
+
+	float radians = angle * 3.14159265 / 180.0;
+	float skew = tan(radians);
+
+
+	skew = -skew;
+
+
+	int newWidth = image.width + abs(skew * image.height);
+	Image result(newWidth, image.height);
+
+	int offset;
+	if (skew >= 0)
+	{
+		offset = 0;
+	}
+	else
+	{
+		offset = abs(skew * image.height);
+	}
+
+
+	for (int y = 0; y < image.height; y++)
+	{
+		int shift = skew * y;
+		for (int x = 0; x < image.width; x++)
+		{
+			int new_X = x + shift + offset;
+
+			if (new_X >= 0 && new_X < result.width)
+			{
+				for (int k = 0; k < 3; k++)
+				{
+					result(new_X, y, k) = image(x, y, k);
+				}
+			}
+		}
+	}
+
+	image = result;
+}
+void SobelEdge(Image& img)
+{
+	for (int x = 0; x < img.width; x++)
+	{
+		for (int y = 0; y < img.height; y++)
+		{
+			int sum = 0;
+			for (int c = 0; c < 3; c++)
+			{
+				sum += img(x, y, c);
+			}
+			int avg = sum / 3;
+			img(x, y, 0) = img(x, y, 1) = img(x, y, 2) = avg;
+		}
+	}
+
+
+	int gx[3][3] =
+	{
+		{-1, 0, 1},
+		{-2, 0, 2},
+		{-1, 0, 1}
+	};
+
+	int gy[3][3] =
+	{
+		{-1, -2, -1},
+		{ 0,  0,  0},
+		{ 1,  2,  1}
+	};
+
+	Image output(img.width, img.height);
+	for (int x = 1; x < img.width - 1; x++)
+	{
+		for (int y = 1; y < img.height - 1; y++)
+		{
+			int gx_sum = 0, gy_sum = 0;
+
+
+			for (int dx = -1; dx <= 1; dx++)
+			{
+				for (int dy = -1; dy <= 1; dy++)
+				{
+					int pix = img(x + dx, y + dy, 0);
+
+					gx_sum += pix * gx[dx + 1][dy + 1];
+					gy_sum += pix * gy[dx + 1][dy + 1];
+				}
+			}
+
+
+			int edge = sqrt(gx_sum * gx_sum + gy_sum * gy_sum);
+
+
+			if (edge > 255)
+			{
+				edge = 255;
+			}
+			if (edge < 0)
+			{
+				edge = 0;
+			}
+			edge = 255 - edge;
+			output(x, y, 0) = output(x, y, 1) = output(x, y, 2) = edge;
+		}
+	}
+
+	img = output;
+}
 	
 
 
 
-// filter edges detector made by adham.
-void DetectEdges(Image& image)
-{
 
-	for (int i = 0; i < image.width; i++) {
-		for (int j = 0; j < image.height; j++) {
-			unsigned int avg = 0;
-			for (int k = 0; k < 3; k++) {
-				avg += image(i, j, k);
-			}
-			avg /= 3;
-			image(i, j, 0) = avg;
-			image(i, j, 1) = avg;
-			image(i, j, 2) = avg;
-		}
-	}
-
-	Image edges(image.width, image.height);
-	int threshold = 30;
-
-	for (int i = 0; i < image.width - 1; i++)
-	{
-		for (int j = 0; j < image.height - 1; j++)
-		{
-			int diff_X = abs(image(i, j, 0) - image(i + 1, j, 0));
-			int diff_Y = abs(image(i, j, 0) - image(i, j + 1, 0));
-
-			int edgeval = diff_X + diff_Y;
-
-			if (edgeval > threshold)
-			{
-				edges(i, j, 0) = edges(i, j, 1) = edges(i, j, 2) = 0;
-			}
-			else {
-				edges(i, j, 0) = edges(i, j, 1) = edges(i, j, 2) = 255;
-			}
-		}
-	}
-
-	image = edges;
-}
 
 
 int main()
