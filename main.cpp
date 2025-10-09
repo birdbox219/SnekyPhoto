@@ -44,6 +44,7 @@
  *
  * Project Links:
  * - GitHub Repository: [https://github.com/birdbox219/SnekyPhoto]
+ *  Documemt in the repo
 
  * - Video Demo: [https://youtu.be/-8p5UYJaxVM]
  *
