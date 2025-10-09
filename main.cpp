@@ -45,7 +45,7 @@
  * Project Links:
  * - GitHub Repository: [https://github.com/birdbox219/SnekyPhoto]
 
- * - Video Demo: [https://youtube.com/your-video-link]
+ * - Video Demo: [https://youtu.be/-8p5UYJaxVM]
  *
  * Date: 9 October 2025
  * Section: S26
