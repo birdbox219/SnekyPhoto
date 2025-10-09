@@ -104,12 +104,35 @@ int LoadMenu()
 		cout << "  1. Grayscale\n";
 		cout << "  2. Black and White\n";
 		cout << "  3. Invert Colors\n";
-		cout << "  4. Flip Image\n";
-		cout << "  5. Crop Image\n";
-		cout << "  6. Resize Image\n";
-		cout << "  7. Infrared Color Effect\n";
-		cout << "  8. Frame Image\n";
-		cout << "  9. Old Tv \n";
+
+
+		cout << "  5. Flip Image\n";
+		cout << "  6. Rotate Image\n";
+		cout << "  7. Adjust Brightness\n";
+		cout << "  8. Crop Image\n";
+		cout << "  9. Frame Image\n";
+		cout << "  10. Edge Detection\n";
+		cout << "  11. Resize Image\n";
+		cout << "  12. Blur Image\n";
+		cout << "  13. Sun Light Effect\n";
+		cout << "  14. Oil Paint Effect\n";
+		cout << "  15. Old Tv\n";
+		cout << "  16. Purble colour Effect\n";
+		cout << "  17. Infrared Color Effect\n";
+		cout << "  18. Skew Image\n";
+		
+
+		
+
+		
+	
+		
+		
+		
+		
+		
+		
+		
 
 		HeaderLine();
 		cout << "  MANAGEMENT:\n";
@@ -119,6 +142,7 @@ int LoadMenu()
 		cout << "  99. Undo Last Filter\n";
 		cout << "  100. Redo Last Undone Filter\n";
 		cout << "  101. Save and exit\n";
+
 
 		cout << "\n  0. Exit\n";
 
@@ -834,53 +858,7 @@ void AddFrameImageFilter(Image& image) {
 // filter edges detector made by adham.
 // Filter No.10 Edge Detection (done by: Adham )
   
-void SkewImage(Image& image)
-{
-	float angle;
-	cout << "Enter skew angle (in degrees): ";
-	cin >> angle;
 
-
-	float radians = angle * 3.14159265 / 180.0;
-	float skew = tan(radians);
-
-
-	skew = -skew;
-
-
-	int newWidth = image.width + abs(skew * image.height);
-	Image result(newWidth, image.height);
-
-	int offset;
-	if (skew >= 0)
-	{
-		offset = 0;
-	}
-	else
-	{
-		offset = abs(skew * image.height);
-	}
-
-
-	for (int y = 0; y < image.height; y++)
-	{
-		int shift = skew * y;
-		for (int x = 0; x < image.width; x++)
-		{
-			int new_X = x + shift + offset;
-
-			if (new_X >= 0 && new_X < result.width)
-			{
-				for (int k = 0; k < 3; k++)
-				{
-					result(new_X, y, k) = image(x, y, k);
-				}
-			}
-		}
-	}
-
-	image = result;
-}
 
 
 
@@ -946,7 +924,7 @@ void SobelEdge(Image& img)
 			{
 				edge = 0;
 			}
-			edge = 255 - edge;
+			//edge = 255 - edge;
 			output(x, y, 0) = output(x, y, 1) = output(x, y, 2) = edge;
 		}
 	}
@@ -1057,124 +1035,8 @@ void SunLightImageFilter(Image& image, int sunBrightness)
 }
 
 
-// Filter No.15 - Old TV Effect (done by Mahmoud Elsayed)
-// we were using C++14 so we couldn't use std::clamp from <algorithm> and we used it alot so we made our own version of it.
 
-template <typename T>
-T clamp(T value, T minValue, T maxValue) {
-	if (value < minValue) return minValue;
-	if (value > maxValue) return maxValue;
-	return value;
-}
-
-
-void OldTVImageFilter(Image& image)
-{
-
-	GrayScaleFilter(image);
-	//int noiseDistortion = 30;
-	int noiseDistortion = 60;
-	double blackLInesHighlight = 0.3;
-	int lineThickness = 5;
-	int lineSpacing = 10;
-
-
-	double vigS = 0.4;
-	double vigP = 2.5;
-	double centerX = image.width / 2.0;
-	double centerY = image.height / 2.0;
-
-	for (int i = 0; i < image.width; ++i) {
-
-		for (int j = 0; j < image.height; ++j) {
-
-			double dx = (i - centerX) / centerX;
-			double dy = (j - centerY) / centerY;
-
-			double distance = sqrt(dx * dx + dy * dy);
-			double vignette = 1.0 - vigS * pow(distance, vigP);
-
-			if (vignette < 0.0)
-			{
-				vignette = 0.0;
-			}
-
-
-
-
-			for (int k = 0; k < 3; ++k) {
-
-				int newDisotrtion = image(i, j, k);
-
-				int jitterAmount = (rand() % noiseDistortion) + (rand() % noiseDistortion) + (rand() % noiseDistortion) - (3 * noiseDistortion / 2);
-				newDisotrtion += jitterAmount;
-
-				if ((j % lineSpacing) < lineThickness)
-				{
-
-					newDisotrtion = static_cast<int>(newDisotrtion * (1.0 - blackLInesHighlight));
-				}
-
-
-				newDisotrtion = static_cast<int>(newDisotrtion * vignette);
-
-				image(i, j, k) = clamp(newDisotrtion, 0, 255);
-			}
-
-		}
-	}
-}
-
-
-// Filter No.16 - Purple Filter (done by Mahmoud Elsayed)
-void PurpleImageFilter(Image& image)
-{
-
-	int purblePower = 50;
-	double R, G, B;
-	for (int i = 0; i < image.width; ++i) {
-		for (int j = 0; j < image.height; ++j) {
-
-			R = image(i, j, 0) + purblePower;
-			G = image(i, j, 1) - purblePower / 2;
-			B = image(i, j, 2) + purblePower;
-
-			image(i, j, 0) = clamp(static_cast<int>(R), 0, 255);
-			image(i, j, 1) = clamp(static_cast<int>(G), 0, 255);
-			image(i, j, 2) = clamp(static_cast<int>(B), 0, 255);
-
-
-		}
-	}
-}
-
-
-
-
-
-// Filter No.17 - Infrared Color Filter (done by Mahmoud Elsayed)
-void infraredColorImageFilter(Image& img)
-{
-	for (int i = 1; i < img.width; i++) {
-		for (int j = 1; j < img.height; j++) {
-			int R = img(i, j, 0);
-			int G = img(i, j, 1);
-			int B = img(i, j, 2);
-
-			R = 255;
-			G = 255 - G * 0.98f;
-			B = 255 - B * 0.95f;
-
-
-			
-			img(i, j, 0) = R;
-			img(i, j, 1) = G;
-			img(i, j, 2) = B;
-		}
-	}
-}
-
-
+// Filter No.14 - Oil Paint Effect (done by Adham)
 
 void OilPaint(Image& img, int win = 5)
 {
@@ -1232,6 +1094,178 @@ void OilPaint(Image& img, int win = 5)
 
 
 
+// Filter No.15 - Old TV Effect (done by Mahmoud Elsayed)
+// we were using C++14 so we couldn't use std::clamp from <algorithm> and we used it alot so we made our own version of it.
+
+template <typename T>
+T Clamp(T value, T minValue, T maxValue) {
+	if (value < minValue) return minValue;
+	if (value > maxValue) return maxValue;
+	return value;
+}
+
+
+void OldTVImageFilter(Image& image)
+{
+
+	GrayScaleFilter(image);
+	//int noiseDistortion = 30;
+	int noiseDistortion = 60;
+	double blackLInesHighlight = 0.3;
+	int lineThickness = 5;
+	int lineSpacing = 10;
+
+
+	double vigS = 0.4;
+	double vigP = 2.5;
+	double centerX = image.width / 2.0;
+	double centerY = image.height / 2.0;
+
+	for (int i = 0; i < image.width; ++i) {
+
+		for (int j = 0; j < image.height; ++j) {
+
+			double dx = (i - centerX) / centerX;
+			double dy = (j - centerY) / centerY;
+
+			double distance = sqrt(dx * dx + dy * dy);
+			double vignette = 1.0 - vigS * pow(distance, vigP);
+
+			if (vignette < 0.0)
+			{
+				vignette = 0.0;
+			}
+
+
+
+
+			for (int k = 0; k < 3; ++k) {
+
+				int newDisotrtion = image(i, j, k);
+
+				int jitterAmount = (rand() % noiseDistortion) + (rand() % noiseDistortion) + (rand() % noiseDistortion) - (3 * noiseDistortion / 2);
+				newDisotrtion += jitterAmount;
+
+				if ((j % lineSpacing) < lineThickness)
+				{
+
+					newDisotrtion = static_cast<int>(newDisotrtion * (1.0 - blackLInesHighlight));
+				}
+
+
+				newDisotrtion = static_cast<int>(newDisotrtion * vignette);
+
+				image(i, j, k) = ::Clamp(newDisotrtion, 0, 255);
+			}
+
+		}
+	}
+}
+
+
+// Filter No.16 - Purple Filter (done by Mahmoud Elsayed)
+void PurpleImageFilter(Image& image)
+{
+
+	int purblePower = 50;
+	double R, G, B;
+	for (int i = 0; i < image.width; ++i) {
+		for (int j = 0; j < image.height; ++j) {
+
+			R = image(i, j, 0) + purblePower;
+			G = image(i, j, 1) - purblePower / 2;
+			B = image(i, j, 2) + purblePower;
+
+			image(i, j, 0) = ::Clamp(static_cast<int>(R), 0, 255);
+			image(i, j, 1) = ::Clamp(static_cast<int>(G), 0, 255);
+			image(i, j, 2) = ::Clamp(static_cast<int>(B), 0, 255);
+
+
+		}
+	}
+}
+
+
+
+
+
+// Filter No.17 - Infrared Color Filter (done by Mahmoud Elsayed)
+void infraredColorImageFilter(Image& img)
+{
+	for (int i = 1; i < img.width; i++) {
+		for (int j = 1; j < img.height; j++) {
+			int R = img(i, j, 0);
+			int G = img(i, j, 1);
+			int B = img(i, j, 2);
+
+			R = 255;
+			G = 255 - G * 0.98f;
+			B = 255 - B * 0.95f;
+
+
+			
+			img(i, j, 0) = R;
+			img(i, j, 1) = G;
+			img(i, j, 2) = B;
+		}
+	}
+}
+
+
+// Filter No.18 - SkewImage (done by Adham Tamer)
+void SkewImage(Image& image)
+{
+	float angle;
+	cout << "Enter skew angle (in degrees): ";
+	cin >> angle;
+
+
+	float radians = angle * 3.14159265 / 180.0;
+	float skew = tan(radians);
+
+
+	skew = -skew;
+
+
+	int newWidth = image.width + abs(skew * image.height);
+	Image result(newWidth, image.height);
+
+	int offset;
+	if (skew >= 0)
+	{
+		offset = 0;
+	}
+	else
+	{
+		offset = abs(skew * image.height);
+	}
+
+
+	for (int y = 0; y < image.height; y++)
+	{
+		int shift = skew * y;
+		for (int x = 0; x < image.width; x++)
+		{
+			int new_X = x + shift + offset;
+
+			if (new_X >= 0 && new_X < result.width)
+			{
+				for (int k = 0; k < 3; k++)
+				{
+					result(new_X, y, k) = image(x, y, k);
+				}
+			}
+		}
+	}
+
+	image = result;
+}
+
+
+
+
+
+
 
 
 
@@ -1280,7 +1314,7 @@ int main()
                                                                                                               
 )" << "\n";
 
-	cout << "                 (c) 2025 Mahmoud elsayed Games. All Rights Reserved.\n\n";
+	cout << "                 (c) 2025 Mahmoud elsayed / FCAI-CU . All Rights Reserved.\n\n";
 
 	
 	int startChoice = LoadStartMenu();
@@ -1371,7 +1405,10 @@ int main()
 
 				break;
 			}
-			case 4:
+
+			
+
+			case 5:
 			{
 				/*while (!redoFilter.empty()) redoFilter.pop();
 				while (!redoHistory.empty()) redoHistory.pop();*/
@@ -1436,7 +1473,7 @@ int main()
 				pause();
 				break;
 			}
-			case 5:
+			case 8:
 			{
 				
 
@@ -1461,7 +1498,7 @@ int main()
 				
 				
 			}
-			case 6:
+			case 11:
 			{
 				/*while (!redoFilter.empty()) redoFilter.pop();
 				while (!redoHistory.empty()) redoHistory.pop();*/
@@ -1485,7 +1522,7 @@ int main()
 				break;
 			}
 
-			case 7:
+			case 17:
 			{
 				NewFilter(redoFilter, redoHistory);
 				apliedFilter.push(image);
@@ -1496,7 +1533,7 @@ int main()
 			}
 
 
-			case 8: 
+			case 9: 
 			{
 				NewFilter(redoFilter, redoHistory);
 				apliedFilter.push(image);
@@ -1507,12 +1544,42 @@ int main()
 
 			}
 
-			case 9:
+			case 15:
 			{
 				NewFilter(redoFilter, redoHistory);
 				apliedFilter.push(image);
 				OldTVImageFilter(image);
 				filterHistory.push_back("Old Tv");
+				pause();
+				break;
+			}
+
+			case 10:
+			{
+				NewFilter(redoFilter, redoHistory);
+				apliedFilter.push(image);
+				SobelEdge(image);
+				filterHistory.push_back("Edge Detection");
+				pause();
+				break;
+			}
+
+			case 14:
+			{
+				NewFilter(redoFilter, redoHistory);
+				apliedFilter.push(image);
+				OilPaint(image);
+				filterHistory.push_back("Oil Paint");
+				pause();
+				break;
+			}
+
+			case 12:
+			{
+				NewFilter(redoFilter, redoHistory);
+				apliedFilter.push(image);
+				SkewImage(image);
+				filterHistory.push_back("Skew Image");
 				pause();
 				break;
 			}
