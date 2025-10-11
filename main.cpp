@@ -1271,7 +1271,7 @@ int main()
                                                                                                               
 )" << "\n";
 
-	cout << "                 (c) 2025 Mahmoud elsayed Games. All Rights Reserved.\n\n";
+	cout << "                 (c) 2025 Mahmoud elsayed - FCAI. All Rights Reserved.\n\n";
 
 	int startChoice = LoadStartMenu();
 
@@ -1627,7 +1627,7 @@ int main()
 				cout << "\nLoading a new image...\n";
 				image = LoadImage();
 
-				// Clear all applied filters and histories for a fresh start
+				
 				while (!apliedFilter.empty())
 					apliedFilter.pop();
 				filterHistory.clear();
